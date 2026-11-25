@@ -12,6 +12,9 @@ import {
   stripExtension,
 } from '@/features/classification/parse';
 import type { ScannedFile } from '@/features/classification/types';
+import * as MediaLibrary from 'expo-media-library/legacy';
+
+import { hasAllVideosAccess, isAllVideosRoot } from './roots';
 
 const MAX_DEPTH = 12;
 const YIELD_EVERY = 25;
@@ -127,6 +130,99 @@ async function traverse(
   return { videos, subtitles, directoriesVisited, errors, cancelled: false };
 }
 
+const PAGE_SIZE = 500;
+
+/** `file:///storage/emulated/0/Movies/X/a.mkv` -> `Movies/X/a.mkv` (volume prefix removed). */
+function relativeFromFileUri(uri: string): string {
+  let path = uri.replace(/^file:\/\//, '');
+  try {
+    path = decodeURI(path);
+  } catch {
+    // keep raw path
+  }
+  return path.replace(/^\/storage\/(emulated\/\d+|[^/]+)\//, '').replace(/^\/+/, '');
+}
+
+/**
+ * Lists every video in Android's media store (needs the Videos permission — no folder picking).
+ * Subtitles are looked up best-effort next to each video; Android 13+ may hide non-media files.
+ */
+async function traverseMediaStore(
+  onStep: (progress: { directoriesVisited: number; filesDiscovered: number; currentPath: string }) => void,
+  shouldCancel: () => boolean,
+): Promise<TraverseResult> {
+  const videos: VideoEntry[] = [];
+  const subtitles: ScannedFile[] = [];
+  const errors: string[] = [];
+  const dirs = new Map<string, string>(); // dir file-uri -> relative dir
+
+  if (!(await hasAllVideosAccess())) {
+    throw new Error('Video access permission was not granted.');
+  }
+
+  let after: string | undefined;
+  for (;;) {
+    if (shouldCancel()) return { videos, subtitles, directoriesVisited: dirs.size, errors, cancelled: true };
+    const page = await MediaLibrary.getAssetsAsync({
+      mediaType: MediaLibrary.MediaType.video,
+      first: PAGE_SIZE,
+      after,
+      sortBy: [[MediaLibrary.SortBy.modificationTime, false]],
+    });
+    for (const asset of page.assets) {
+      if (!asset.uri.startsWith('file://')) continue;
+      const relativePath = relativeFromFileUri(asset.uri);
+      if (!relativePath || relativePath.split('/').some((part) => part.startsWith('.'))) continue;
+      const fileName = asset.filename || relativePath.split('/').pop() || relativePath;
+      if (!isVideoFile(fileName)) continue;
+      let sizeBytes: number | null = null;
+      try {
+        sizeBytes = new File(asset.uri).size ?? null;
+      } catch {
+        // size unknown
+      }
+      videos.push({
+        relativePath,
+        fileName,
+        sizeBytes,
+        uri: asset.uri,
+        modifiedAt: asset.modificationTime || null,
+        mime: null,
+      });
+      const slash = asset.uri.lastIndexOf('/');
+      const relSlash = relativePath.lastIndexOf('/');
+      dirs.set(asset.uri.slice(0, slash), relSlash >= 0 ? relativePath.slice(0, relSlash) : '');
+    }
+    onStep({ directoriesVisited: dirs.size, filesDiscovered: videos.length, currentPath: 'Media library' });
+    await yieldToUi();
+    if (!page.hasNextPage || page.assets.length === 0) break;
+    after = page.endCursor;
+  }
+
+  let visited = 0;
+  for (const [dirUri, rel] of dirs) {
+    if (shouldCancel()) return { videos, subtitles, directoriesVisited: dirs.size, errors, cancelled: true };
+    try {
+      for (const entry of new Directory(dirUri).list()) {
+        if (entry instanceof File && isSubtitleFile(entry.name)) {
+          subtitles.push({
+            relativePath: rel ? `${rel}/${entry.name}` : entry.name,
+            fileName: entry.name,
+            sizeBytes: entry.size ?? null,
+            uri: entry.uri,
+            modifiedAt: entry.lastModified || null,
+          });
+        }
+      }
+    } catch {
+      // folder listing not allowed — subtitles in it are skipped
+    }
+    if (++visited % YIELD_EVERY === 0) await yieldToUi();
+  }
+
+  return { videos, subtitles, directoriesVisited: dirs.size, errors, cancelled: false };
+}
+
 function versionRank(f: ScannedFile): number {
   const q = qualityOf(f.fileName) ?? '';
   let score = 0;
@@ -163,11 +259,9 @@ export async function scanActiveRoot(
 
   try {
     emit({ status: 'scanning' });
-    const result = await traverse(
-      root.document_uri,
-      (step) => emit(step),
-      shouldCancel,
-    );
+    const result = isAllVideosRoot(root.document_uri)
+      ? await traverseMediaStore((step) => emit(step), shouldCancel)
+      : await traverse(root.document_uri, (step) => emit(step), shouldCancel);
 
     if (result.cancelled) {
       await db.runAsync(

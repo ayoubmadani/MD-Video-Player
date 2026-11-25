@@ -5,8 +5,10 @@ import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Animated,
   FlatList,
+  Linking,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -32,7 +34,12 @@ import {
   type ScanRoot,
 } from '@/db/repositories';
 import { fetchMissingPosters } from '@/features/metadata/fetcher';
-import { pickMovieFolder } from '@/features/scanner/roots';
+import {
+  ALL_VIDEOS_NAME,
+  ALL_VIDEOS_URI,
+  pickMovieFolder,
+  requestAllVideosAccess,
+} from '@/features/scanner/roots';
 import { startScan, useScanState } from '@/features/scanner/scan-store';
 import { listPlaylists, type YoutubePlaylist } from '@/features/youtube/store';
 import { setBlurTarget } from '@/lib/blur';
@@ -156,6 +163,24 @@ export default function HomeScreen() {
     startScan();
   }, [reload]);
 
+  const onAllowVideos = useCallback(async () => {
+    const granted = await requestAllVideosAccess();
+    if (!granted) {
+      Alert.alert(
+        'Video access needed',
+        'Allow access to videos in the app settings so the library can find them automatically, or choose a folder instead.',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Open settings', onPress: () => Linking.openSettings().catch(() => undefined) },
+        ],
+      );
+      return;
+    }
+    await setRoot(ALL_VIDEOS_URI, ALL_VIDEOS_NAME);
+    await reload();
+    startScan();
+  }, [reload]);
+
   if (root === undefined) {
     return (
       <View style={styles.loader}>
@@ -172,9 +197,10 @@ export default function HomeScreen() {
         </Text>
         <EmptyState
           title="Your offline library"
-          message="WatchNow plays movies and series stored on this device. Select your Movie folder once — files never leave your phone."
+          message="Plays the movies and series stored on this device. Allow access once and every video on your phone is found automatically — files never leave your phone."
         />
-        <Button label="Select Movie Folder" onPress={onSelectFolder} />
+        <Button label="Allow access to videos" onPress={onAllowVideos} />
+        <Button label="Choose a folder instead" variant="ghost" onPress={onSelectFolder} />
       </View>
     );
   }

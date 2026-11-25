@@ -32,7 +32,14 @@ import {
   type ScanRoot,
 } from '@/db/repositories';
 import { fetchMissingPosters } from '@/features/metadata/fetcher';
-import { folderStillAccessible, pickMovieFolder } from '@/features/scanner/roots';
+import {
+  ALL_VIDEOS_NAME,
+  ALL_VIDEOS_URI,
+  isAllVideosRoot,
+  pickMovieFolder,
+  requestAllVideosAccess,
+  rootStillAccessible,
+} from '@/features/scanner/roots';
 import { startScan } from '@/features/scanner/scan-store';
 import { setBlurTarget } from '@/lib/blur';
 import { getHomePrefs, setHomePref, type HomePrefKey, type HomePrefs } from '@/lib/prefs';
@@ -230,7 +237,7 @@ export default function SettingsScreen() {
     const r = await getRoot();
     setRootState(r);
     setStats(await getStats());
-    if (r) setAccessible(folderStillAccessible(r.documentUri));
+    if (r) setAccessible(await rootStillAccessible(r.documentUri));
     setTmdbKey((await getSetting('tmdb_api_key')) ?? '');
     setOmdbKey((await getSetting('omdb_api_key')) ?? '');
     setPrefs(await getHomePrefs());
@@ -283,6 +290,36 @@ export default function SettingsScreen() {
       ],
     );
   }, [reload]);
+
+  const onUseAllVideos = useCallback(async () => {
+    const granted = await requestAllVideosAccess();
+    if (!granted) {
+      Alert.alert('Video access needed', 'Allow access to videos for this app in Android settings.', [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Open settings', onPress: () => Linking.openSettings().catch(() => undefined) },
+      ]);
+      return;
+    }
+    if (isAllVideosRoot(root?.documentUri)) {
+      await reload();
+      startScan();
+      return;
+    }
+    const apply = async () => {
+      await setRoot(ALL_VIDEOS_URI, ALL_VIDEOS_NAME);
+      await reload();
+      startScan();
+    };
+    if (!root) return apply();
+    Alert.alert(
+      'Use all videos on this device?',
+      'The library will be rebuilt from every video on your phone instead of the selected folder.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Use all videos', onPress: apply },
+      ],
+    );
+  }, [reload, root]);
 
   const saveKey = useCallback(async (key: 'tmdb_api_key' | 'omdb_api_key', value: string) => {
     await setSetting(key, value);
@@ -365,8 +402,12 @@ export default function SettingsScreen() {
                 ? root.displayName.charAt(0).toUpperCase() + root.displayName.slice(1)
                 : 'No folder selected'
             }
-            hint={root?.documentUri ?? 'Pick a folder to start scanning'}
-            onPress={onChangeFolder}
+            hint={
+              isAllVideosRoot(root?.documentUri)
+                ? 'Every video found on this device'
+                : (root?.documentUri ?? 'Allow video access or pick a folder')
+            }
+            onPress={isAllVideosRoot(root?.documentUri) ? onUseAllVideos : onChangeFolder}
             divider
           />
           <SettingRow
@@ -385,23 +426,32 @@ export default function SettingsScreen() {
             }
             label={
               !root
-                ? 'Folder access not set up'
+                ? 'Library access not set up'
                 : accessible
-                  ? 'Folder access OK'
-                  : 'Permission lost — reselect the folder'
+                  ? 'Library access OK'
+                  : isAllVideosRoot(root.documentUri)
+                    ? 'Video permission lost — allow it again'
+                    : 'Permission lost — reselect the folder'
             }
             tint={!root ? colors.textDisabled : accessible ? colors.success : colors.warning}
             divider
           />
           <SettingRow icon="refresh" label="Rescan library" onPress={() => startScan()} divider />
+          {!isAllVideosRoot(root?.documentUri) ? (
+            <SettingRow icon="film-outline" label="Use all videos on this device" onPress={onUseAllVideos} divider />
+          ) : null}
           <SettingRow
             icon="swap-horizontal"
-            label={root ? 'Change folder' : 'Choose folder'}
+            label={root && !isAllVideosRoot(root.documentUri) ? 'Change folder' : 'Choose a folder instead'}
             onPress={onChangeFolder}
             {...(root && !accessible ? { divider: true } : {})}
           />
           {root && !accessible ? (
-            <SettingRow icon="lock-open-outline" label="Re-grant access" onPress={onChangeFolder} />
+            <SettingRow
+              icon="lock-open-outline"
+              label="Re-grant access"
+              onPress={isAllVideosRoot(root.documentUri) ? onUseAllVideos : onChangeFolder}
+            />
           ) : null}
         </Section>
 
