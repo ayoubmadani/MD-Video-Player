@@ -6,6 +6,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -48,8 +51,31 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleRelease --no-daemon
 
-      - name: Upload APK
+      - name: Rename APK
+        run: |
+          VERSION=$(node -p "require('./app.json').expo.version")
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          cp android/app/build/outputs/apk/release/app-release.apk MD-Video-Player.apk
+
+      - name: Upload APK (workflow artifact)
         uses: actions/upload-artifact@v4
         with:
           name: MD-Video-Player-APK
-          path: android/app/build/outputs/apk/release/app-release.apk
+          path: MD-Video-Player.apk
+
+      # One release per app.json version. Re-builds of the same version replace the APK.
+      # Direct link: https://github.com/<owner>/<repo>/releases/latest/download/MD-Video-Player.apk
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="v$VERSION"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" MD-Video-Player.apk --clobber
+          else
+            gh release create "$TAG" MD-Video-Player.apk \
+              --title "MD Video Player $TAG" \
+              --notes "Built from ${GITHUB_SHA::7}." \
+              --target "$GITHUB_SHA" \
+              --latest
+          fi
