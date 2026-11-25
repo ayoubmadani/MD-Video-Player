@@ -29,13 +29,10 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Setup Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
-
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
 
       # android/ is not committed (Expo Continuous Native Generation) — generate it from app.json.
       - name: Expo prebuild
