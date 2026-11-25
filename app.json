@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Watch Now",
+    "name": "MD Player",
     "slug": "WatchNow",
     "version": "1.5.0",
     "orientation": "default",
@@ -9,7 +9,7 @@
     "userInterfaceStyle": "dark",
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#101412",
+        "backgroundColor": "#000000",
         "foregroundImage": "./assets/images/adaptive-icon.png"
       },
       "predictiveBackGestureEnabled": false,
@@ -27,7 +27,7 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#101412",
+          "backgroundColor": "#000000",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "imageHeight": 200,

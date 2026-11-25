@@ -193,7 +193,7 @@ export default function HomeScreen() {
     return (
       <View style={[styles.onboard, { paddingTop: insets.top + spacing['2xl'] }]}>
         <Text style={styles.logo}>
-          Watch<Text style={styles.logoAccent}>Now</Text>
+          MD <Text style={styles.logoAccent}>Player</Text>
         </Text>
         <EmptyState
           title="Your offline library"
@@ -439,7 +439,7 @@ export default function HomeScreen() {
 
         <View style={styles.headerTop}>
           <Text style={styles.logo}>
-            Watch<Text style={styles.logoAccent}>Now</Text>
+            MD <Text style={styles.logoAccent}>Player</Text>
           </Text>
           <View style={styles.headerActions}>
             <Pressable onPress={() => startScan()} hitSlop={10} style={styles.iconBtn}>

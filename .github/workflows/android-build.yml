@@ -37,6 +37,12 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      # Monotonic Android versionCode so every CI build installs over the previous one.
+      - name: Set versionCode
+        run: |
+          node -e "const f='app.json',j=require('./'+f);j.expo.android.versionCode=${{ github.run_number }}+100;require('fs').writeFileSync(f,JSON.stringify(j,null,2))"
+          node -p "'versionCode=' + require('./app.json').expo.android.versionCode"
+
       # android/ is not committed (Expo Continuous Native Generation) — generate it from app.json.
       - name: Expo prebuild
         run: pnpm exec expo prebuild --platform android --no-install
@@ -50,6 +56,14 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew assembleRelease --no-daemon
+
+      # Same checks Android's installer does; fails the build instead of shipping an invalid APK.
+      - name: Verify APK
+        run: |
+          BT=$(ls -d "$ANDROID_HOME"/build-tools/* | sort -V | tail -1)
+          APK=android/app/build/outputs/apk/release/app-release.apk
+          "$BT/apksigner" verify --verbose --print-certs "$APK"
+          "$BT/aapt2" dump badging "$APK" | grep -E "^(package|sdkVersion|targetSdkVersion|application-label|native-code)"
 
       - name: Rename APK
         run: |

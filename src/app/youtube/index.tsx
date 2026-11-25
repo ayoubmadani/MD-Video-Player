@@ -59,7 +59,7 @@ export default function YoutubeLibraryScreen() {
     (p: YoutubePlaylist) => {
       Alert.alert(
         'Remove playlist?',
-        `"${p.title}" will be removed from WatchNow. The videos stay on YouTube.`,
+        `"${p.title}" will be removed from MD Player. The videos stay on YouTube.`,
         [
           { text: 'Cancel', style: 'cancel' },
           {

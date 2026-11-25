@@ -377,7 +377,7 @@ export default function SettingsScreen() {
             <Ionicons name="film" size={26} color={colors.primary} />
           </View>
           <View style={styles.identityBody}>
-            <Text style={styles.identityName}>WatchNow</Text>
+            <Text style={styles.identityName}>MD Player</Text>
             <Text style={styles.identityTag}>Offline media library</Text>
           </View>
           <View style={styles.versionPill}>
@@ -561,7 +561,7 @@ export default function SettingsScreen() {
           <SettingRow
             icon="help-circle-outline"
             label="How to use"
-            hint="A quick guide to WatchNow"
+            hint="A quick guide to MD Player"
             onPress={() => router.push('/how-to-use')}
           />
         </Section>
@@ -573,7 +573,7 @@ export default function SettingsScreen() {
         </Text>
 
         <Text style={styles.footer}>
-          WatchNow v{installed} · playback never leaves your device
+          MD Player v{installed} · playback never leaves your device
         </Text>
         <Text style={styles.footer}>
           This product uses the TMDB API but is not endorsed or certified by TMDB. Show data from{' '}

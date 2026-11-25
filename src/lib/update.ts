@@ -1,6 +1,6 @@
-// Update check + share via GitHub releases of this private repo.
-// No backend: the .env token (fine-grained PAT, Contents:read) authenticates
-// the API and the APK asset download; EXPO_PUBLIC_* ships it in the bundle.
+// Update check + share via GitHub releases of the public MD-Video-Player repo.
+// No backend: optional EXPO_PUBLIC_GITHUB_TOKEN raises API rate limits;
+// public repos need no token.
 import Constants from 'expo-constants';
 import { DownloadTask, File, Paths } from 'expo-file-system';
 import { getContentUriAsync } from 'expo-file-system/legacy';
@@ -12,7 +12,7 @@ import { compareSemver, parseLatestRelease, type LatestRelease } from './update-
 export { compareSemver };
 export type { LatestRelease };
 
-const REPO = 'ErManoj-Sharma/WatchNow';
+const REPO = 'ayoubmadani/MD-Video-Player';
 export const RELEASES_URL = `https://github.com/${REPO}/releases/latest`;
 
 function ghHeaders(accept: string): Record<string, string> {
@@ -44,7 +44,7 @@ export async function downloadUpdate(onProgress?: (pct: number) => void): Promis
   const release = await checkForLatestRelease();
   if (!release) throw new Error('No release found');
   if (release.assetId == null) throw new Error('Release has no APK asset');
-  const file = new File(Paths.cache, `WatchNow-${release.version}.apk`);
+  const file = new File(Paths.cache, `MD-Player-${release.version}.apk`);
   if (file.exists) {
     onProgress?.(100);
     return file.uri;
@@ -82,7 +82,7 @@ export async function installUpdate(onProgress?: (pct: number) => void): Promise
   if (await Sharing.isAvailableAsync()) {
     await Sharing.shareAsync(uri, {
       mimeType: 'application/vnd.android.package-archive',
-      dialogTitle: 'Install WatchNow',
+      dialogTitle: 'Install MD Player',
     });
     return true;
   }
@@ -99,7 +99,7 @@ export async function shareApp(onProgress?: (pct: number) => void): Promise<bool
     if (await Sharing.isAvailableAsync()) {
       await Sharing.shareAsync(apk, {
         mimeType: 'application/vnd.android.package-archive',
-        dialogTitle: 'Share WatchNow',
+        dialogTitle: 'Share MD Player',
       });
       return true;
     }
@@ -107,7 +107,7 @@ export async function shareApp(onProgress?: (pct: number) => void): Promise<bool
     // fall through to link share
   }
   await Share.share({
-    message: `WatchNow — watch your own movies & shows offline. Get the app: ${RELEASES_URL}`,
+    message: `MD Player — watch your own movies & shows offline. Get the app: ${RELEASES_URL}`,
   });
   return true;
 }

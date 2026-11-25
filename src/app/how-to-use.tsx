@@ -63,7 +63,7 @@ const SECTIONS: GuideSection[] = [
     summary: 'Pick a folder, we do the rest',
     steps: [
       'Open Settings → Library and choose the folder holding your movies & series.',
-      'WatchNow scans it, reads names, and pulls posters & info automatically.',
+      'MD Player scans it, reads names, and pulls posters & info automatically.',
       'New files? Tap "Rescan library" in Settings → Index anytime.',
     ],
   },
@@ -342,7 +342,7 @@ export default function HowToUseScreen() {
             <Ionicons name="film-outline" size={26} color={colors.primary} />
           </View>
           <View style={{ flex: 1, gap: 4 }}>
-            <Text style={styles.heroTitle}>Welcome to WatchNow</Text>
+            <Text style={styles.heroTitle}>Welcome to MD Player</Text>
             <Text style={styles.intro}>
               Play your own movies & series and stream live TV — everything stays on your
               device.
