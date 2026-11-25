@@ -18,7 +18,7 @@ import YoutubePlayer, {
 } from 'react-native-youtube-iframe';
 
 import { getPlaylistVideos, saveVideoProgress, type YoutubeVideo } from '@/features/youtube/store';
-import { colors, font, radius, spacing } from '@/theme/colors';
+import { colors, font, radius, spacing } from '@/theme';
 
 // One episode per mount (key on videoId): the iframe HTML bakes the video id in,
 // so a fresh WebView per episode is the reliable way to switch + resume.
@@ -146,10 +146,10 @@ export default function YoutubePlayerScreen() {
     <View style={styles.container}>
       <StatusBar hidden style="light" />
       {videos === null ? (
-        <ActivityIndicator color={colors.accent} />
+        <ActivityIndicator color={colors.primary} />
       ) : !current ? (
         <View style={styles.missing}>
-          <Ionicons name="alert-circle-outline" size={40} color={colors.textMuted} />
+          <Ionicons name="alert-circle-outline" size={40} color={colors.textDisabled} />
           <Text style={styles.missingText}>Episode not found in this playlist.</Text>
           <Pressable onPress={() => router.back()} hitSlop={8}>
             <Text style={styles.missingAction}>Go back</Text>
@@ -174,14 +174,14 @@ export default function YoutubePlayerScreen() {
 
       {/* UP NEXT */}
       {upNext && next ? (
-        <View style={[styles.overlay, { bottom: insets.bottom + spacing.lg }]}>
+        <View style={[styles.overlay, { bottom: insets.bottom + spacing.xl }]}>
           <Text style={styles.overlayLabel}>Up next</Text>
           <Text style={styles.overlayTitle} numberOfLines={2}>
             #{next.position + 1} · {next.title}
           </Text>
           <View style={styles.overlayActions}>
             <Pressable onPress={advance} style={({ pressed }) => [styles.overlayBtn, pressed && styles.pressed]}>
-              <Ionicons name="play" size={16} color="#000" />
+              <Ionicons name="play" size={16} color={colors.onPrimary} />
               <Text style={styles.overlayBtnText}>Play now</Text>
             </Pressable>
             <Pressable
@@ -195,7 +195,7 @@ export default function YoutubePlayerScreen() {
 
       {/* ERROR */}
       {errorMsg ? (
-        <View style={[styles.overlay, { bottom: insets.bottom + spacing.lg }]}>
+        <View style={[styles.overlay, { bottom: insets.bottom + spacing.xl }]}>
           <Text style={styles.overlayLabelError}>Can’t play</Text>
           <Text style={styles.overlayTitle} numberOfLines={3}>
             {errorMsg}
@@ -205,7 +205,7 @@ export default function YoutubePlayerScreen() {
               <Pressable
                 onPress={advance}
                 style={({ pressed }) => [styles.overlayBtn, pressed && styles.pressed]}>
-                <Ionicons name="play-skip-forward" size={16} color="#000" />
+                <Ionicons name="play-skip-forward" size={16} color={colors.onPrimary} />
                 <Text style={styles.overlayBtnText}>Skip to next</Text>
               </Pressable>
             ) : null}
@@ -224,21 +224,21 @@ export default function YoutubePlayerScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: colors.playerBackground,
     alignItems: 'center',
     justifyContent: 'center',
   },
   overlay: {
     position: 'absolute',
-    left: spacing.md,
-    right: spacing.md,
+    left: spacing.base,
+    right: spacing.base,
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
-    padding: spacing.md,
+    padding: spacing.base,
     gap: spacing.xs,
   },
   overlayLabel: {
-    color: colors.accent,
+    color: colors.primary,
     fontSize: font.small,
     fontWeight: '800',
     letterSpacing: 1,
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   overlayTitle: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.body,
     fontWeight: '700',
   },
@@ -266,19 +266,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
-    backgroundColor: '#fff',
+    backgroundColor: colors.primary,
     borderRadius: radius.md,
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
     paddingVertical: 10,
   },
   overlayBtnText: {
-    color: '#000',
+    color: colors.onPrimary,
     fontSize: font.caption,
     fontWeight: '800',
   },
   overlayBtnGhost: {
     borderRadius: radius.md,
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
     paddingVertical: 10,
   },
   overlayBtnGhostText: {
@@ -298,7 +298,7 @@ const styles = StyleSheet.create({
     fontSize: font.body,
   },
   missingAction: {
-    color: colors.accent,
+    color: colors.primary,
     fontSize: font.body,
     fontWeight: '700',
   },

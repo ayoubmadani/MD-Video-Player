@@ -4,7 +4,7 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { ProgressBar } from '@/components/progress-bar';
 import { Thumb } from '@/components/thumb';
 import type { ContinueItem } from '@/db/repositories';
-import { colors, font, radius, spacing } from '@/theme/colors';
+import { colors, font, radius, spacing } from '@/theme';
 import { formatDuration } from '@/utils/format';
 
 function ContinueCard({ item }: { item: ContinueItem }) {
@@ -57,17 +57,17 @@ export function ContinueRow({ items }: { items: ContinueItem[] }) {
 
 const styles = StyleSheet.create({
   section: {
-    marginBottom: spacing.lg,
+    marginBottom: spacing.xl,
   },
   sectionTitle: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.heading,
     fontWeight: '800',
-    marginHorizontal: spacing.md,
+    marginHorizontal: spacing.base,
     marginBottom: spacing.sm,
   },
   row: {
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
     gap: spacing.sm,
   },
   card: {
@@ -81,13 +81,13 @@ const styles = StyleSheet.create({
     bottom: 8,
   },
   title: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.caption,
     fontWeight: '700',
     marginTop: spacing.xs,
   },
   subtitle: {
-    color: colors.textMuted,
+    color: colors.textDisabled,
     fontSize: font.small,
     marginTop: 2,
   },

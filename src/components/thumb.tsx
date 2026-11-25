@@ -2,10 +2,10 @@ import { Image } from 'expo-image';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { font, radius } from '@/theme/colors';
+import { font, radius } from '@/theme';
 import { useThumbnail, type ThumbSource } from '@/features/library/thumbnails';
 
-const PLACEHOLDER_TINTS = ['#3d0a0e', '#1a2744', '#2b1f3d', '#1f3328', '#3d2f0a', '#0f2f33'];
+const PLACEHOLDER_TINTS = ['#1A211C', '#1E2A22', '#22302A', '#163B26', '#263229', '#1B2620'];
 
 function tintFor(key: number): string {
   return PLACEHOLDER_TINTS[Math.abs(key) % PLACEHOLDER_TINTS.length];
@@ -18,7 +18,7 @@ export function Thumb({
   width,
   height,
   title,
-  borderRadius = radius.md,
+  borderRadius = radius.thumb,
 }: {
   mediaId?: number | null;
   uri?: string | null;

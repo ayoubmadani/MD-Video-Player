@@ -44,7 +44,7 @@ import {
   shareApp,
   type LatestRelease,
 } from '@/lib/update';
-import { colors, font, radius, spacing } from '@/theme/colors';
+import { colors, font, radius, spacing } from '@/theme';
 import { formatBytes, formatTimestamp } from '@/utils/format';
 
 type IoniconName = keyof typeof Ionicons.glyphMap;
@@ -94,7 +94,7 @@ function ToggleRow({
         <Switch
           value={value}
           onValueChange={onValueChange}
-          trackColor={{ false: colors.surfaceHover, true: colors.accent }}
+          trackColor={{ false: colors.border, true: colors.primary }}
           thumbColor="#ffffff"
         />
       </View>
@@ -141,7 +141,7 @@ function SettingRow({
         </Text>
       ) : null}
       {accessory ??
-        (onPress ? <Ionicons name="chevron-forward" size={14} color={colors.textMuted} /> : null)}
+        (onPress ? <Ionicons name="chevron-forward" size={14} color={colors.textDisabled} /> : null)}
     </>
   );
   return (
@@ -324,20 +324,20 @@ export default function SettingsScreen() {
 
   return (
     <BlurTargetView ref={rootRef} style={styles.container}>
-      <View style={{ paddingTop: insets.top + spacing.sm, paddingHorizontal: spacing.md, backgroundColor: colors.background }}>
+      <View style={{ paddingTop: insets.top + spacing.sm, paddingHorizontal: spacing.base, backgroundColor: colors.background }}>
         <Text style={styles.heading}>Settings</Text>
       </View>
       <ScrollView
         style={{ flex: 1 }}
         contentContainerStyle={{
-          paddingHorizontal: spacing.md,
-          paddingBottom: spacing.xl + 72,
+          paddingHorizontal: spacing.base,
+          paddingBottom: spacing['2xl'] + 72,
         }}>
         <ScanIndicator />
 
         <View style={styles.identity}>
           <View style={styles.identityBadge}>
-            <Ionicons name="film" size={26} color={colors.accent} />
+            <Ionicons name="film" size={26} color={colors.primary} />
           </View>
           <View style={styles.identityBody}>
             <Text style={styles.identityName}>WatchNow</Text>
@@ -390,7 +390,7 @@ export default function SettingsScreen() {
                   ? 'Folder access OK'
                   : 'Permission lost — reselect the folder'
             }
-            tint={!root ? colors.textMuted : accessible ? colors.success : colors.warning}
+            tint={!root ? colors.textDisabled : accessible ? colors.success : colors.warning}
             divider
           />
           <SettingRow icon="refresh" label="Rescan library" onPress={() => startScan()} divider />
@@ -468,7 +468,7 @@ export default function SettingsScreen() {
               downloadPct !== null ? (
                 <>
                   <Text style={styles.pctText}>{downloadPct}%</Text>
-                  <ActivityIndicator size="small" color={colors.accent} />
+                  <ActivityIndicator size="small" color={colors.primary} />
                 </>
               ) : (
                 <>
@@ -477,7 +477,7 @@ export default function SettingsScreen() {
                       <Text style={styles.newBadgeText}>NEW</Text>
                     </View>
                   ) : null}
-                  <Ionicons name="chevron-forward" size={14} color={colors.textMuted} />
+                  <Ionicons name="chevron-forward" size={14} color={colors.textDisabled} />
                 </>
               )
             }
@@ -497,7 +497,7 @@ export default function SettingsScreen() {
             label="Check for updates"
             onPress={checking ? undefined : checkUpdates}
             accessory={
-              checking ? <ActivityIndicator size="small" color={colors.accent} /> : undefined
+              checking ? <ActivityIndicator size="small" color={colors.primary} /> : undefined
             }
             divider
           />
@@ -517,7 +517,7 @@ export default function SettingsScreen() {
         </Section>
 
         <Text
-          style={[styles.footer, { color: colors.text }]}
+          style={[styles.footer, { color: colors.textPrimary }]}
           onPress={() => Linking.openURL('https://manoj-sharma-portfolio.vercel.app/')}>
           Built by ErManoj Sharma
         </Text>
@@ -581,7 +581,7 @@ export default function SettingsScreen() {
             onChangeText={setTmdbKey}
             onBlur={() => saveKey('tmdb_api_key', tmdbKey)}
             placeholder="tmdb.org/settings/api"
-            placeholderTextColor={colors.textMuted}
+            placeholderTextColor={colors.textDisabled}
             autoCapitalize="none"
             autoCorrect={false}
             secureTextEntry
@@ -594,7 +594,7 @@ export default function SettingsScreen() {
             onChangeText={setOmdbKey}
             onBlur={() => saveKey('omdb_api_key', omdbKey)}
             placeholder="omdbapi.com"
-            placeholderTextColor={colors.textMuted}
+            placeholderTextColor={colors.textDisabled}
             autoCapitalize="none"
             autoCorrect={false}
             secureTextEntry
@@ -635,25 +635,25 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   heading: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.hero,
     fontWeight: '900',
-    marginBottom: spacing.md,
+    marginBottom: spacing.base,
   },
   identity: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
+    gap: spacing.base,
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
-    padding: spacing.md,
-    marginBottom: spacing.lg,
+    padding: spacing.base,
+    marginBottom: spacing.xl,
   },
   identityBadge: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: colors.surfaceRaised,
+    backgroundColor: colors.surfaceElevated,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -661,17 +661,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   identityName: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.heading,
     fontWeight: '800',
   },
   identityTag: {
-    color: colors.textMuted,
+    color: colors.textDisabled,
     fontSize: font.small,
     marginTop: 2,
   },
   versionPill: {
-    backgroundColor: colors.surfaceRaised,
+    backgroundColor: colors.surfaceElevated,
     borderRadius: 999,
     paddingHorizontal: spacing.sm,
     paddingVertical: 4,
@@ -682,10 +682,10 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   section: {
-    marginBottom: spacing.lg,
+    marginBottom: spacing.xl,
   },
   eyebrow: {
-    color: colors.accentSoft,
+    color: colors.primary,
     fontSize: font.small,
     fontWeight: '800',
     letterSpacing: 1.5,
@@ -697,7 +697,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
     overflow: 'hidden',
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
   },
   row: {
     flexDirection: 'row',
@@ -706,7 +706,7 @@ const styles = StyleSheet.create({
     paddingVertical: 13,
   },
   rowPressed: {
-    backgroundColor: colors.surfaceRaised,
+    backgroundColor: colors.surfaceElevated,
   },
   rowIcon: {
     width: 20,
@@ -715,12 +715,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   rowLabel: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.body,
     fontWeight: '600',
   },
   rowHint: {
-    color: colors.textMuted,
+    color: colors.textDisabled,
     fontSize: font.caption,
     marginTop: 2,
   },
@@ -741,7 +741,7 @@ const styles = StyleSheet.create({
     marginRight: spacing.xs,
   },
   newBadgeText: {
-    color: '#000',
+    color: colors.onPrimary,
     fontSize: 10,
     fontWeight: '800',
   },
@@ -755,7 +755,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.overlay,
     justifyContent: 'center',
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: spacing.xl,
   },
   modalCard: {
     backgroundColor: colors.surface,
@@ -767,41 +767,41 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: spacing.md,
-    paddingTop: spacing.md,
+    paddingHorizontal: spacing.base,
+    paddingTop: spacing.base,
     paddingBottom: spacing.sm,
   },
   modalTitle: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.heading,
     fontWeight: '800',
   },
   modalBody: {
-    paddingHorizontal: spacing.md,
-    paddingBottom: spacing.lg,
+    paddingHorizontal: spacing.base,
+    paddingBottom: spacing.xl,
   },
   modalRows: {
-    marginTop: spacing.md,
+    marginTop: spacing.base,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: colors.border,
   },
   statStrip: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: spacing.md,
+    paddingVertical: spacing.base,
   },
   stat: {
     flex: 1,
     alignItems: 'center',
   },
   statValue: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.hero,
     fontWeight: '900',
     fontVariant: ['tabular-nums'],
   },
   statLabel: {
-    color: colors.textMuted,
+    color: colors.textDisabled,
     fontSize: font.small,
     fontWeight: '700',
     letterSpacing: 1,
@@ -813,25 +813,25 @@ const styles = StyleSheet.create({
     borderTopColor: colors.border,
   },
   hint: {
-    color: colors.textMuted,
+    color: colors.textDisabled,
     fontSize: font.small,
-    paddingTop: spacing.md,
+    paddingTop: spacing.base,
     lineHeight: font.small * 1.5,
   },
   fieldLabel: {
     color: colors.textSecondary,
     fontSize: font.caption,
     fontWeight: '700',
-    marginTop: spacing.md,
+    marginTop: spacing.base,
     marginBottom: spacing.xs,
   },
   input: {
-    backgroundColor: colors.surfaceRaised,
-    color: colors.text,
+    backgroundColor: colors.surfaceElevated,
+    color: colors.textPrimary,
     borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.border,
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
     paddingVertical: 10,
     fontSize: font.body,
   },
@@ -846,9 +846,9 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   footer: {
-    color: colors.textMuted,
+    color: colors.textDisabled,
     fontSize: font.small,
     textAlign: 'center',
-    marginTop: spacing.md,
+    marginTop: spacing.base,
   },
 });

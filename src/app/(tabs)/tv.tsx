@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Thumb } from '@/components/thumb';
 import { listTvChannels, setTvFavorite, type TvChannel } from '@/features/tv/store';
-import { colors, font, radius, spacing } from '@/theme/colors';
+import { colors, font, radius, spacing } from '@/theme';
 
 const LOGO = 56;
 const UNGROUPED = 'Other Channels';
@@ -31,7 +31,7 @@ function ChannelRow({
     <>
       <Pressable
         onPress={() => onPlay(channel)}
-        style={({ pressed }) => [styles.row, pressed && { backgroundColor: colors.surfaceHover }]}>
+        style={({ pressed }) => [styles.row, pressed && { backgroundColor: colors.surfaceElevated }]}>
         <Thumb
           posterUrl={channel.logoUrl}
           width={LOGO}
@@ -53,10 +53,10 @@ function ChannelRow({
           <Ionicons
             name={saved ? 'heart' : 'heart-outline'}
             size={20}
-            color={saved ? colors.accent : colors.textMuted}
+            color={saved ? colors.primary : colors.textDisabled}
           />
         </Pressable>
-        <Ionicons name="play-circle-outline" size={22} color={colors.textMuted} />
+        <Ionicons name="play-circle-outline" size={22} color={colors.textDisabled} />
       </Pressable>
       {divider ? <View style={styles.divider} /> : null}
     </>
@@ -125,22 +125,22 @@ export default function TvScreen() {
             <Ionicons
               name={showSaved ? 'heart' : 'heart-outline'}
               size={22}
-              color={showSaved ? colors.accent : colors.text}
+              color={showSaved ? colors.primary : colors.textPrimary}
             />
           </Pressable>
           <Pressable onPress={() => router.push('/tv-playlists')} hitSlop={12} style={styles.addLink}>
-            <Ionicons name="add-circle-outline" size={22} color={colors.text} />
+            <Ionicons name="add-circle-outline" size={22} color={colors.textPrimary} />
             <Text style={styles.addLinkText}>Playlists</Text>
           </Pressable>
         </View>
       </View>
       <View style={styles.searchWrap}>
-        <Ionicons name="search-outline" size={18} color={colors.textMuted} style={{ marginRight: spacing.sm }} />
+        <Ionicons name="search-outline" size={18} color={colors.textDisabled} style={{ marginRight: spacing.sm }} />
         <TextInput
           value={query}
           onChangeText={setQuery}
           placeholder="Search channels"
-          placeholderTextColor={colors.textMuted}
+          placeholderTextColor={colors.textDisabled}
           style={styles.input}
           autoCorrect={false}
           autoCapitalize="none"
@@ -154,8 +154,8 @@ export default function TvScreen() {
         stickySectionHeadersEnabled={false}
         keyboardShouldPersistTaps="handled"
         contentContainerStyle={{
-          paddingHorizontal: spacing.md,
-          paddingBottom: spacing.xl + insets.bottom + 72,
+          paddingHorizontal: spacing.base,
+          paddingBottom: spacing['2xl'] + insets.bottom + 72,
         }}
         renderSectionHeader={({ section }) => (
           <Text style={styles.eyebrow}>{section.title}</Text>
@@ -197,18 +197,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
     marginBottom: spacing.sm,
   },
   heading: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.hero,
     fontWeight: '900',
   },
   headerActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
+    gap: spacing.base,
   },
   addLink: {
     flexDirection: 'row',
@@ -216,23 +216,23 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   addLinkText: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.caption,
     fontWeight: '700',
   },
   searchWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginHorizontal: spacing.md,
+    marginHorizontal: spacing.base,
     marginBottom: spacing.sm,
-    backgroundColor: colors.surfaceRaised,
+    backgroundColor: colors.surfaceElevated,
     borderRadius: radius.md,
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
     paddingVertical: 10,
   },
   input: {
     flex: 1,
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.body,
     padding: 0,
   },
@@ -242,7 +242,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 1,
     textTransform: 'uppercase',
-    marginTop: spacing.lg,
+    marginTop: spacing.xl,
     marginBottom: spacing.sm,
   },
   card: {
@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
+    gap: spacing.base,
     padding: spacing.sm,
   },
   rowBody: {
@@ -261,12 +261,12 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   rowLabel: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.body,
     fontWeight: '600',
   },
   rowHint: {
-    color: colors.textMuted,
+    color: colors.textDisabled,
     fontSize: font.small,
   },
   favBtn: {
@@ -275,13 +275,13 @@ const styles = StyleSheet.create({
   divider: {
     height: StyleSheet.hairlineWidth,
     backgroundColor: colors.border,
-    marginLeft: spacing.sm + LOGO + spacing.md,
+    marginLeft: spacing.sm + LOGO + spacing.base,
   },
   empty: {
-    color: colors.textMuted,
+    color: colors.textDisabled,
     textAlign: 'center',
-    marginTop: spacing.xl,
+    marginTop: spacing['2xl'],
     fontSize: font.body,
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: spacing.xl,
   },
 });

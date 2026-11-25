@@ -11,7 +11,7 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { cancelScan, useScanState } from '@/features/scanner/scan-store';
-import { colors, font, radius, spacing } from '@/theme/colors';
+import { colors, font, radius, spacing } from '@/theme';
 
 const SWEEP_MS = 900;
 
@@ -65,7 +65,7 @@ export function ScanIndicator() {
   return (
     <View style={styles.banner}>
       <View style={styles.headerRow}>
-        <ActivityIndicator size="small" color={colors.accent} />
+        <ActivityIndicator size="small" color={colors.primary} />
         <Text style={styles.title}>
           {scan.status === 'indexing' ? 'Indexing library…' : 'Scanning folder…'}
         </Text>
@@ -94,13 +94,13 @@ export function ScanIndicator() {
 
 const styles = StyleSheet.create({
   banner: {
-    marginHorizontal: spacing.md,
+    marginHorizontal: spacing.base,
     marginBottom: spacing.sm,
-    backgroundColor: colors.surfaceRaised,
+    backgroundColor: colors.surfaceElevated,
     borderRadius: radius.md,
-    padding: spacing.md,
+    padding: spacing.base,
     borderLeftWidth: 3,
-    borderLeftColor: colors.accent,
+    borderLeftColor: colors.primary,
   },
   errorBanner: {
     flexDirection: 'row',
@@ -115,12 +115,12 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.body,
     fontWeight: '700',
   },
   cancel: {
-    backgroundColor: colors.surfaceHover,
+    backgroundColor: colors.surfaceElevated,
     borderRadius: radius.sm,
     paddingHorizontal: spacing.sm + 2,
     paddingVertical: 6,
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   meta: {
-    color: colors.textMuted,
+    color: colors.textDisabled,
     fontSize: font.caption,
     marginTop: spacing.sm,
   },
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   path: {
-    color: colors.textMuted,
+    color: colors.textDisabled,
     fontSize: font.small,
     marginTop: 2,
   },
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: '35%',
     borderRadius: 2,
-    backgroundColor: colors.accent,
+    backgroundColor: colors.primary,
   },
   errorText: {
     flex: 1,

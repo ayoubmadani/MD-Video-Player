@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { Thumb } from '@/components/thumb';
-import { colors, font, radius, spacing } from '@/theme/colors';
+import { colors, font, radius, spacing } from '@/theme';
 
 export type CardItem = {
   id: number;
@@ -50,17 +50,17 @@ export function SectionRow({ title, items }: { title: string; items: CardItem[] 
 
 const styles = StyleSheet.create({
   section: {
-    marginBottom: spacing.lg,
+    marginBottom: spacing.xl,
   },
   sectionTitle: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.heading,
     fontWeight: '800',
-    marginHorizontal: spacing.md,
+    marginHorizontal: spacing.base,
     marginBottom: spacing.sm,
   },
   row: {
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
     gap: spacing.sm,
   },
   card: {
@@ -68,13 +68,13 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
   },
   title: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.caption,
     fontWeight: '600',
     marginTop: spacing.xs,
   },
   subtitle: {
-    color: colors.textMuted,
+    color: colors.textDisabled,
     fontSize: font.small,
     marginTop: 2,
   },

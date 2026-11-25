@@ -14,7 +14,7 @@ import {
   savePlaylist,
   type YoutubePlaylist,
 } from '@/features/youtube/store';
-import { colors, font, radius, spacing } from '@/theme/colors';
+import { colors, font, radius, spacing } from '@/theme';
 
 export default function YoutubeLibraryScreen() {
   const insets = useSafeAreaInsets();
@@ -79,15 +79,15 @@ export default function YoutubeLibraryScreen() {
     <View style={styles.container}>
       <View style={[styles.header, { paddingTop: insets.top + spacing.sm }]}>
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Ionicons name="chevron-back" size={26} color={colors.text} />
+          <Ionicons name="chevron-back" size={26} color={colors.textPrimary} />
         </Pressable>
         <Text style={styles.heading}>YouTube</Text>
       </View>
 
       <ScrollView
         contentContainerStyle={{
-          paddingHorizontal: spacing.md,
-          paddingBottom: spacing.xl + insets.bottom,
+          paddingHorizontal: spacing.base,
+          paddingBottom: spacing['2xl'] + insets.bottom,
         }}>
         <Text style={styles.hint}>
           Paste a public YouTube playlist URL to add its videos to a “YouTube shows” row on Home.
@@ -108,17 +108,17 @@ export default function YoutubeLibraryScreen() {
             setError(null);
           }}
           placeholder="youtube.com/playlist?list=..."
-          placeholderTextColor={colors.textMuted}
+          placeholderTextColor={colors.textDisabled}
           autoCapitalize="none"
           autoCorrect={false}
           style={styles.input}
         />
         {error ? <Text style={styles.error}>{error}</Text> : null}
-        <View style={{ marginTop: spacing.md }}>
+        <View style={{ marginTop: spacing.base }}>
           <Button label={busy ? 'Adding…' : 'Add playlist'} onPress={onAdd} disabled={busy || !url.trim() || !hasKey} />
         </View>
 
-        <Text style={[styles.fieldLabel, { marginTop: spacing.lg }]}>
+        <Text style={[styles.fieldLabel, { marginTop: spacing.xl }]}>
           {playlists.length} {playlists.length === 1 ? 'playlist' : 'playlists'} added
         </Text>
         {playlists.length === 0 ? (
@@ -133,7 +133,7 @@ export default function YoutubeLibraryScreen() {
                   <Image source={{ uri: p.thumbnailUrl }} style={styles.thumb} contentFit="cover" />
                 ) : (
                   <View style={styles.thumb}>
-                    <Ionicons name="logo-youtube" size={18} color={colors.accent} />
+                    <Ionicons name="logo-youtube" size={18} color={colors.primary} />
                   </View>
                 )}
                 <View style={styles.rowBody}>
@@ -145,10 +145,10 @@ export default function YoutubeLibraryScreen() {
                     {p.channelTitle ? `  ·  ${p.channelTitle}` : ''}
                   </Text>
                 </View>
-                <Ionicons name="chevron-forward" size={14} color={colors.textMuted} />
+                <Ionicons name="chevron-forward" size={14} color={colors.textDisabled} />
               </Pressable>
               <Pressable hitSlop={8} onPress={() => onDelete(p)} style={styles.delete}>
-                <Ionicons name="trash-outline" size={16} color={colors.textMuted} />
+                <Ionicons name="trash-outline" size={16} color={colors.textDisabled} />
               </Pressable>
             </View>
           ))
@@ -167,16 +167,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
     paddingBottom: spacing.sm,
   },
   heading: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.title,
     fontWeight: '900',
   },
   hint: {
-    color: colors.textMuted,
+    color: colors.textDisabled,
     fontSize: font.small,
     lineHeight: font.small * 1.5,
   },
@@ -190,29 +190,29 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     fontSize: font.caption,
     fontWeight: '700',
-    marginTop: spacing.md,
+    marginTop: spacing.base,
     marginBottom: spacing.xs,
   },
   input: {
-    backgroundColor: colors.surfaceRaised,
-    color: colors.text,
+    backgroundColor: colors.surfaceElevated,
+    color: colors.textPrimary,
     borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.border,
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
     paddingVertical: 10,
     fontSize: font.body,
   },
   error: {
-    color: colors.accentSoft,
+    color: colors.primary,
     fontSize: font.caption,
     marginTop: spacing.xs,
     fontWeight: '600',
   },
   empty: {
-    color: colors.textMuted,
+    color: colors.textDisabled,
     fontSize: font.small,
-    paddingVertical: spacing.md,
+    paddingVertical: spacing.base,
   },
   row: {
     flexDirection: 'row',
@@ -229,13 +229,13 @@ const styles = StyleSheet.create({
     padding: spacing.sm,
   },
   rowPressed: {
-    backgroundColor: colors.surfaceRaised,
+    backgroundColor: colors.surfaceElevated,
   },
   thumb: {
     width: 64,
     height: 36,
     borderRadius: radius.sm,
-    backgroundColor: colors.surfaceRaised,
+    backgroundColor: colors.surfaceElevated,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -244,17 +244,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   rowTitle: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.body,
     fontWeight: '700',
   },
   rowMeta: {
-    color: colors.textMuted,
+    color: colors.textDisabled,
     fontSize: font.small,
     marginTop: 2,
   },
   delete: {
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
     paddingVertical: spacing.sm,
   },
 });

@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 
 import { getDb } from '@/db/database';
-import { colors } from '@/theme/colors';
+import { colors } from '@/theme';
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
 

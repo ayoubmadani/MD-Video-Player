@@ -37,7 +37,7 @@ import { startScan, useScanState } from '@/features/scanner/scan-store';
 import { listPlaylists, type YoutubePlaylist } from '@/features/youtube/store';
 import { setBlurTarget } from '@/lib/blur';
 import { getHomePrefs, type HomePrefs } from '@/lib/prefs';
-import { colors, font, spacing } from '@/theme/colors';
+import { colors, font, radius, spacing } from '@/theme';
 
 type Filter = 'all' | 'movies' | 'series';
 
@@ -159,14 +159,14 @@ export default function HomeScreen() {
   if (root === undefined) {
     return (
       <View style={styles.loader}>
-        <ActivityIndicator color={colors.accent} />
+        <ActivityIndicator color={colors.primary} />
       </View>
     );
   }
 
   if (!root) {
     return (
-      <View style={[styles.onboard, { paddingTop: insets.top + spacing.xl }]}>
+      <View style={[styles.onboard, { paddingTop: insets.top + spacing['2xl'] }]}>
         <Text style={styles.logo}>
           Watch<Text style={styles.logoAccent}>Now</Text>
         </Text>
@@ -311,13 +311,13 @@ export default function HomeScreen() {
           <Pressable
             onPress={() => playHero(item)}
             style={({ pressed }) => [styles.heroPlay, pressed && styles.pressed]}>
-            <Ionicons name="play" size={20} color="#000" />
+            <Ionicons name="play" size={20} color={colors.onPrimary} />
             <Text style={styles.heroPlayText}>{item.kind === 'movie' ? 'Play' : 'View'}</Text>
           </Pressable>
           <Pressable
             onPress={() => openHero(item)}
             style={({ pressed }) => [styles.heroInfo, pressed && styles.pressed]}>
-            <Ionicons name="information-circle-outline" size={20} color={colors.text} />
+            <Ionicons name="information-circle-outline" size={20} color={colors.textPrimary} />
             <Text style={styles.heroInfoText}>Info</Text>
           </Pressable>
         </View>
@@ -338,7 +338,7 @@ export default function HomeScreen() {
         })}
         contentContainerStyle={{
           paddingTop: hasFeatured ? 0 : headerHeight,
-          paddingBottom: spacing.xl + 72,
+          paddingBottom: spacing['2xl'] + 72,
         }}>
         {/* HERO */}
         {hasFeatured ? (
@@ -418,16 +418,16 @@ export default function HomeScreen() {
           <View style={styles.headerActions}>
             <Pressable onPress={() => startScan()} hitSlop={10} style={styles.iconBtn}>
               {scanning ? (
-                <ActivityIndicator size="small" color={colors.accent} />
+                <ActivityIndicator size="small" color={colors.primary} />
               ) : (
-                <Ionicons name="sync-outline" size={22} color={colors.text} />
+                <Ionicons name="sync-outline" size={22} color={colors.textPrimary} />
               )}
             </Pressable>
             <Pressable onPress={() => router.push('/search')} hitSlop={10} style={styles.iconBtn}>
-              <Ionicons name="search-outline" size={22} color={colors.text} />
+              <Ionicons name="search-outline" size={22} color={colors.textPrimary} />
             </Pressable>
             <Pressable onPress={() => router.push('/settings')} hitSlop={10} style={styles.iconBtn}>
-              <Ionicons name="settings-outline" size={22} color={colors.text} />
+              <Ionicons name="settings-outline" size={22} color={colors.textPrimary} />
             </Pressable>
           </View>
         </View>
@@ -467,9 +467,9 @@ const styles = StyleSheet.create({
   onboard: {
     flex: 1,
     backgroundColor: colors.background,
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: spacing.xl,
     justifyContent: 'center',
-    gap: spacing.lg,
+    gap: spacing.xl,
   },
   pressed: {
     opacity: 0.7,
@@ -485,7 +485,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
     height: 40,
   },
   headerActions: {
@@ -499,45 +499,45 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   logo: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.hero,
     fontWeight: '900',
     letterSpacing: -0.5,
   },
   logoAccent: {
-    color: colors.accent,
+    color: colors.primary,
   },
   chipRow: {
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
     gap: spacing.sm,
     paddingTop: spacing.xs,
     alignItems: 'center',
   },
   chip: {
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
     paddingVertical: 6,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.35)',
-    backgroundColor: 'rgba(0,0,0,0.35)',
+    borderColor: colors.border,
+    backgroundColor: colors.surfaceElevated,
   },
   chipActive: {
-    backgroundColor: '#fff',
-    borderColor: '#fff',
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   chipText: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.caption,
     fontWeight: '700',
   },
   chipTextActive: {
-    color: '#000',
+    color: colors.onPrimary,
   },
   heroContent: {
     position: 'absolute',
-    left: spacing.md,
-    right: spacing.md,
-    bottom: spacing.md + 18,
+    left: spacing.base,
+    right: spacing.base,
+    bottom: spacing.base + 18,
     gap: spacing.sm,
     alignItems: 'center',
   },
@@ -558,7 +558,7 @@ const styles = StyleSheet.create({
   },
   dotActive: {
     width: 18,
-    backgroundColor: '#fff',
+    backgroundColor: colors.primary,
   },
   heroBadgeRow: {
     flexDirection: 'row',
@@ -573,7 +573,7 @@ const styles = StyleSheet.create({
     paddingVertical: 1,
   },
   heroBadgeText: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: 11,
     fontWeight: '800',
     letterSpacing: 0.8,
@@ -584,7 +584,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   heroTitle: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.hero,
     fontWeight: '900',
     letterSpacing: -0.5,
@@ -602,12 +602,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing.xs,
-    backgroundColor: '#fff',
-    borderRadius: 8,
+    backgroundColor: colors.primary,
+    borderRadius: radius.md,
     height: 46,
   },
   heroPlayText: {
-    color: '#000',
+    color: colors.onPrimary,
     fontSize: 16,
     fontWeight: '800',
   },
@@ -617,12 +617,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing.xs,
-    backgroundColor: 'rgba(120,120,120,0.55)',
-    borderRadius: 8,
+    backgroundColor: colors.surfaceElevated,
+    borderRadius: radius.md,
     height: 46,
   },
   heroInfoText: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: 16,
     fontWeight: '700',
   },

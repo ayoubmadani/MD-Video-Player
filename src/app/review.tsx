@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/button';
 import { listReviewItems, saveOverride, type ReviewItem } from '@/db/repositories';
-import { colors, font, radius, spacing } from '@/theme/colors';
+import { colors, font, radius, spacing } from '@/theme';
 
 function ReviewCard({ item, onSaved }: { item: ReviewItem; onSaved: () => void }) {
   const [title, setTitle] = useState(item.title);
@@ -28,7 +28,7 @@ function ReviewCard({ item, onSaved }: { item: ReviewItem; onSaved: () => void }
         </Text>
       </View>
       <Text style={styles.current}>Current: {item.title}</Text>
-      <TextInput value={title} onChangeText={setTitle} style={styles.input} placeholder="Corrected title" placeholderTextColor={colors.textMuted} />
+      <TextInput value={title} onChangeText={setTitle} style={styles.input} placeholder="Corrected title" placeholderTextColor={colors.textDisabled} />
       {isEpisode ? (
         <View style={styles.numberRow}>
           <TextInput
@@ -36,7 +36,7 @@ function ReviewCard({ item, onSaved }: { item: ReviewItem; onSaved: () => void }
             onChangeText={setSeason}
             style={[styles.input, styles.numberInput]}
             placeholder="Season"
-            placeholderTextColor={colors.textMuted}
+            placeholderTextColor={colors.textDisabled}
             keyboardType="number-pad"
           />
           <TextInput
@@ -44,7 +44,7 @@ function ReviewCard({ item, onSaved }: { item: ReviewItem; onSaved: () => void }
             onChangeText={setEpisode}
             style={[styles.input, styles.numberInput]}
             placeholder="Episode"
-            placeholderTextColor={colors.textMuted}
+            placeholderTextColor={colors.textDisabled}
             keyboardType="number-pad"
           />
         </View>
@@ -103,7 +103,7 @@ export default function ReviewScreen() {
       <FlatList
         data={items ?? []}
         keyExtractor={(item) => String(item.id)}
-        contentContainerStyle={{ paddingBottom: spacing.xl, paddingHorizontal: spacing.md }}
+        contentContainerStyle={{ paddingBottom: spacing['2xl'], paddingHorizontal: spacing.base }}
         ListEmptyComponent={
           <Text style={styles.empty}>{items == null ? 'Loading…' : 'Nothing to review. Nice.'}</Text>
         }
@@ -119,22 +119,22 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   heading: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.title,
     fontWeight: '900',
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
   },
   subheading: {
     color: colors.textSecondary,
     fontSize: font.caption,
-    paddingHorizontal: spacing.md,
-    marginBottom: spacing.md,
+    paddingHorizontal: spacing.base,
+    marginBottom: spacing.base,
     marginTop: 4,
   },
   card: {
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
-    padding: spacing.md,
+    padding: spacing.base,
     marginBottom: spacing.sm,
     gap: spacing.sm,
   },
@@ -142,12 +142,12 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   kind: {
-    color: colors.accentSoft,
+    color: colors.primary,
     fontSize: font.small,
     fontWeight: '900',
   },
   path: {
-    color: colors.textMuted,
+    color: colors.textDisabled,
     fontSize: font.small,
   },
   current: {
@@ -155,10 +155,10 @@ const styles = StyleSheet.create({
     fontSize: font.caption,
   },
   input: {
-    backgroundColor: colors.surfaceRaised,
-    color: colors.text,
+    backgroundColor: colors.surfaceElevated,
+    color: colors.textPrimary,
     borderRadius: radius.md,
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
     paddingVertical: 10,
     fontSize: font.body,
   },
@@ -174,8 +174,8 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   empty: {
-    color: colors.textMuted,
+    color: colors.textDisabled,
     textAlign: 'center',
-    marginTop: spacing.xl,
+    marginTop: spacing['2xl'],
   },
 });

@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { colors, font, spacing } from '@/theme/colors';
+import { colors, font, radius, spacing } from '@/theme';
 
 // Distinguish "no internet" from "stream dead/geo-blocked": if the device can
 // reach the URL, the failure is the stream itself. HEAD is enough; some servers
@@ -81,7 +81,7 @@ export default function TvPlayerScreen() {
       {/* TOP BAR */}
       <View style={[styles.topBar, { paddingTop: insets.top + spacing.xs }]}>
         <Pressable onPress={() => router.back()} hitSlop={12} style={styles.back}>
-          <Ionicons name="chevron-back" size={24} color="#fff" />
+          <Ionicons name="chevron-back" size={24} color={colors.textPrimary} />
         </Pressable>
         <Text style={styles.title} numberOfLines={1}>
           {name ?? 'Live TV'}
@@ -94,7 +94,7 @@ export default function TvPlayerScreen() {
         <View style={styles.errorOverlay} pointerEvents="box-none">
           <View style={styles.errorCard}>
             {probing ? (
-              <ActivityIndicator size="large" color={colors.accent} />
+              <ActivityIndicator size="large" color={colors.primary} />
             ) : (
               <>
                 <Ionicons
@@ -104,7 +104,7 @@ export default function TvPlayerScreen() {
                 />
                 <Text style={styles.errorText}>{error}</Text>
                 <Pressable onPress={retry} style={({ pressed }) => [styles.retryBtn, pressed && { opacity: 0.7 }]}>
-                  <Ionicons name="refresh" size={16} color="#000" />
+                  <Ionicons name="refresh" size={16} color={colors.onPrimary} />
                   <Text style={styles.retryText}>Retry</Text>
                 </Pressable>
               </>
@@ -119,7 +119,7 @@ export default function TvPlayerScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: colors.playerBackground,
   },
   topBar: {
     position: 'absolute',
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
   },
   title: {
     flex: 1,
-    color: '#fff',
+    color: colors.textPrimary,
     fontSize: font.heading,
     fontWeight: '800',
   },
@@ -155,15 +155,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(0,0,0,0.7)',
-    padding: spacing.lg,
+    padding: spacing.xl,
   },
   errorCard: {
     alignItems: 'center',
-    gap: spacing.md,
+    gap: spacing.base,
     maxWidth: 360,
   },
   errorText: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.body,
     textAlign: 'center',
     fontWeight: '600',
@@ -172,13 +172,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    paddingHorizontal: spacing.md,
+    backgroundColor: colors.primary,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.base,
     paddingVertical: spacing.sm,
   },
   retryText: {
-    color: '#000',
+    color: colors.onPrimary,
     fontSize: font.body,
     fontWeight: '800',
   },

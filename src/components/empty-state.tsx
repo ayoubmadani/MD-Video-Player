@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { colors, font, spacing } from '@/theme/colors';
+import { colors, font, spacing } from '@/theme';
 
 export function EmptyState({ title, message }: { title: string; message: string }) {
   return (
@@ -17,25 +17,25 @@ export function EmptyState({ title, message }: { title: string; message: string 
 const styles = StyleSheet.create({
   wrap: {
     alignItems: 'center',
-    paddingVertical: spacing.xl,
-    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing['2xl'],
+    paddingHorizontal: spacing.xl,
     gap: spacing.sm,
   },
   icon: {
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: colors.surfaceRaised,
+    backgroundColor: colors.surfaceElevated,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: spacing.sm,
   },
   iconText: {
-    color: colors.accent,
+    color: colors.primary,
     fontSize: 24,
   },
   title: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.heading,
     fontWeight: '800',
   },

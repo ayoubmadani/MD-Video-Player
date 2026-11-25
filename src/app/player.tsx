@@ -23,7 +23,7 @@ import {
   updateMediaDuration,
   type MediaInfo,
 } from '@/db/repositories';
-import { colors, font, spacing } from '@/theme/colors';
+import { colors, font, spacing } from '@/theme';
 import { formatDuration } from '@/utils/format';
 import { VlcVideoView, type VlcVideoViewHandle } from '../../modules/vlc-player/src/VlcPlayerView';
 
@@ -648,7 +648,7 @@ export default function PlayerScreen() {
                       : 'volume-high'
             }
             size={40}
-            color={colors.text}
+            color={colors.textPrimary}
             style={styles.seekFlashGlyph}
           />
           <Text style={styles.seekFlashText}>{Math.round(adjust.value * 100)}%</Text>
@@ -660,7 +660,7 @@ export default function PlayerScreen() {
           <Ionicons
             name={seekFlash === 'forward' ? 'play-forward' : 'play-back'}
             size={44}
-            color={colors.text}
+            color={colors.textPrimary}
             style={styles.seekFlashGlyph}
           />
           <Text style={styles.seekFlashText}>10s</Text>
@@ -675,7 +675,7 @@ export default function PlayerScreen() {
             togglePlay();
           }}
           hitSlop={8}>
-          <Ionicons name={playing ? 'pause' : 'play'} size={34} color={colors.text} />
+          <Ionicons name={playing ? 'pause' : 'play'} size={34} color={colors.textPrimary} />
         </Pressable>
       ) : null}
 
@@ -691,8 +691,8 @@ export default function PlayerScreen() {
               styles.topBar,
               {
                 paddingTop: insets.top + spacing.xs,
-                paddingLeft: Math.max(spacing.md, insets.left),
-                paddingRight: Math.max(spacing.md, insets.right),
+                paddingLeft: Math.max(spacing.base, insets.left),
+                paddingRight: Math.max(spacing.base, insets.right),
               },
             ]}
             pointerEvents="box-none">
@@ -700,7 +700,7 @@ export default function PlayerScreen() {
               onPress={() => router.back()}
               hitSlop={12}
               style={({ pressed }) => [styles.backBtn, pressed && { opacity: 0.7 }]}>
-              <Ionicons name="chevron-back" size={24} color={colors.text} />
+              <Ionicons name="chevron-back" size={24} color={colors.textPrimary} />
             </Pressable>
             <View style={styles.titleBlock}>
               <Text style={styles.title} numberOfLines={1}>
@@ -749,7 +749,7 @@ export default function PlayerScreen() {
                   } as never);
                 }}
                 style={styles.nextChip}>
-                <Ionicons name="play-skip-forward" size={13} color="#000" />
+                <Ionicons name="play-skip-forward" size={13} color={colors.onPrimary} />
                 <Text style={styles.nextChipText}>{showNext.label}</Text>
               </Pressable>
             </View>
@@ -774,7 +774,7 @@ export default function PlayerScreen() {
               }}
               hitSlop={8}
               style={styles.barIconButton}>
-              <Ionicons name={playing ? 'pause' : 'play'} size={24} color={colors.text} />
+              <Ionicons name={playing ? 'pause' : 'play'} size={24} color={colors.textPrimary} />
             </Pressable>
             <Pressable
               onPress={() => {
@@ -825,7 +825,7 @@ export default function PlayerScreen() {
                   }
                 }}
                 hitSlop={8}
-                style={[styles.controlChip, { marginRight: spacing.xl }]}>
+                style={[styles.controlChip, { marginRight: spacing['2xl'] }]}>
                 <Text style={styles.controlChipText}>{audioLabel}</Text>
               </Pressable>
               {/* Player is always landscape now — orientation toggle removed
@@ -837,7 +837,7 @@ export default function PlayerScreen() {
                 }}
                 hitSlop={8}
                 style={styles.barIconButton}>
-                <Ionicons name={immersive ? 'contract' : 'expand'} size={22} color={colors.text} />
+                <Ionicons name={immersive ? 'contract' : 'expand'} size={22} color={colors.textPrimary} />
               </Pressable>
               */}
             </View>
@@ -890,13 +890,13 @@ export default function PlayerScreen() {
         <View style={styles.errorOverlay}>
           <Text style={styles.errorTitle}>Playback error</Text>
           <Text style={styles.errorText}>{error}</Text>
-          <Button label="Go back" onPress={() => router.back()} style={{ marginTop: spacing.md, alignSelf: 'stretch' }} />
+          <Button label="Go back" onPress={() => router.back()} style={{ marginTop: spacing.base, alignSelf: 'stretch' }} />
         </View>
       ) : null}
 
       {!media && !error ? (
         <View style={styles.loader} pointerEvents="none">
-          <ActivityIndicator color={colors.accent} size="large" />
+          <ActivityIndicator color={colors.primary} size="large" />
         </View>
       ) : null}
     </View>
@@ -906,7 +906,7 @@ export default function PlayerScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: colors.playerBackground,
   },
   ratioFrame: {
     position: 'absolute',
@@ -927,7 +927,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
-    paddingBottom: spacing.lg, // extra room so the fade blends out smoothly
+    paddingBottom: spacing.xl, // extra room so the fade blends out smoothly
   },
   backBtn: {
     width: 40,
@@ -941,7 +941,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.body,
     fontWeight: '800',
     textShadowColor: 'rgba(0,0,0,0.8)',
@@ -963,7 +963,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: 'rgba(0,0,0,0.55)',
     paddingTop: spacing.sm,
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
   },
   seekHit: {
     paddingVertical: spacing.sm,
@@ -977,26 +977,27 @@ const styles = StyleSheet.create({
   },
   seekFill: {
     height: 4,
-    backgroundColor: colors.accent,
+    borderRadius: 2,
+    backgroundColor: colors.primary,
   },
   controlsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
+    gap: spacing.base,
   },
   controlsRight: {
     marginLeft: 'auto',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
+    gap: spacing.base,
   },
   controlIcon: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.title,
     fontWeight: '700',
   },
   controlChip: {
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
     paddingVertical: 6,
     borderRadius: 16,
     backgroundColor: 'rgba(255,255,255,0.12)',
@@ -1004,17 +1005,17 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255,255,255,0.18)',
   },
   controlChipText: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.caption,
     fontWeight: '700',
   },
   audioPicker: {
     position: 'absolute',
-    right: spacing.md,
+    right: spacing.base,
     minWidth: 160,
     maxWidth: 260,
     borderRadius: 8,
-    backgroundColor: 'rgba(20,20,20,0.95)',
+    backgroundColor: colors.surfaceElevated,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.2)',
     paddingVertical: spacing.xs,
@@ -1023,32 +1024,32 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     fontSize: font.caption,
     fontWeight: '700',
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
     paddingVertical: spacing.xs,
     textTransform: 'uppercase',
   },
   audioOption: {
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
     paddingVertical: spacing.sm,
   },
   audioOptionActive: {
-    backgroundColor: 'rgba(255,59,48,0.25)',
+    backgroundColor: colors.primarySoft,
   },
   audioOptionText: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.body,
   },
   speedBadge: {
     position: 'absolute',
     top: '45%',
     alignSelf: 'center',
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
     paddingVertical: spacing.sm,
     borderRadius: 8,
     backgroundColor: 'rgba(0,0,0,0.7)',
   },
   speedBadgeText: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.title,
     fontWeight: '800',
   },
@@ -1067,7 +1068,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   centerPlayText: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: 30,
     fontWeight: '800',
   },
@@ -1098,7 +1099,7 @@ const styles = StyleSheet.create({
     textShadowRadius: 4,
   },
   seekFlashText: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.body,
     fontWeight: '800',
     textShadowColor: 'rgba(0,0,0,0.9)',
@@ -1112,21 +1113,21 @@ const styles = StyleSheet.create({
   },
   nextRow: {
     alignItems: 'flex-end',
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
     marginBottom: spacing.xs,
   },
   nextChip: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    marginRight: spacing.md,
-    backgroundColor: '#fff',
+    marginRight: spacing.base,
+    backgroundColor: colors.primary,
     borderRadius: 14,
     paddingHorizontal: spacing.sm,
     paddingVertical: 5,
   },
   nextChipText: {
-    color: '#000',
+    color: colors.onPrimary,
     fontSize: font.caption,
     fontWeight: '800',
   },
@@ -1139,10 +1140,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.85)',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: spacing.lg,
+    padding: spacing.xl,
   },
   errorTitle: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.title,
     fontWeight: '800',
     marginBottom: spacing.sm,

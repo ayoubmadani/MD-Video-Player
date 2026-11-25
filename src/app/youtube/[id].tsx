@@ -23,7 +23,7 @@ import {
   type YoutubePlaylist,
   type YoutubeVideo,
 } from '@/features/youtube/store';
-import { colors, font, radius, spacing } from '@/theme/colors';
+import { colors, font, radius, spacing } from '@/theme';
 import { formatDuration } from '@/utils/format';
 
 const THUMB_W = 124;
@@ -41,7 +41,7 @@ function EpisodeItem({ episode, onPress }: { episode: YoutubeVideo; onPress: () 
   return (
     <Pressable
       onPress={onPress}
-      style={({ pressed }) => [styles.episode, pressed && { backgroundColor: colors.surfaceRaised }]}>
+      style={({ pressed }) => [styles.episode, pressed && { backgroundColor: colors.surfaceElevated }]}>
       <View style={styles.thumbWrap}>
         <Thumb
           posterUrl={episode.thumbnailUrl}
@@ -51,12 +51,12 @@ function EpisodeItem({ episode, onPress }: { episode: YoutubeVideo; onPress: () 
         />
         <View style={styles.playOverlay} pointerEvents="none">
           <View style={styles.playCircle}>
-            <Ionicons name="play" size={14} color="#fff" />
+            <Ionicons name="play" size={14} color={colors.textPrimary} />
           </View>
         </View>
         {watched ? (
           <View style={styles.watchedBadge} pointerEvents="none">
-            <Ionicons name="checkmark" size={12} color="#000" />
+            <Ionicons name="checkmark" size={12} color={colors.onPrimary} />
           </View>
         ) : null}
         {!watched && fraction > 0 ? (
@@ -70,7 +70,7 @@ function EpisodeItem({ episode, onPress }: { episode: YoutubeVideo; onPress: () 
         <Text style={styles.episodeTitle} numberOfLines={2}>
           {episode.position + 1}. {episode.title}
         </Text>
-        <Text style={[styles.episodeMeta, resumable && { color: colors.accentSoft, fontWeight: '700' }]}>
+        <Text style={[styles.episodeMeta, resumable && { color: colors.primary, fontWeight: '700' }]}>
           {watched
             ? 'Watched'
             : resumable
@@ -143,7 +143,7 @@ export default function YoutubePlaylistScreen() {
     <View style={styles.container}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: spacing.xl + insets.bottom }}>
+        contentContainerStyle={{ paddingBottom: spacing['2xl'] + insets.bottom }}>
         {/* HERO */}
         <View style={{ height: heroHeight, overflow: 'hidden', backgroundColor: colors.surface }}>
           <Thumb
@@ -184,7 +184,7 @@ export default function YoutubePlaylistScreen() {
             <Pressable
               onPress={() => playEpisode(resumeTarget)}
               style={({ pressed }) => [styles.playBtn, pressed && styles.pressed]}>
-              <Ionicons name="play" size={22} color="#000" />
+              <Ionicons name="play" size={22} color={colors.onPrimary} />
               <Text style={styles.playText}>
                 {isResume ? 'Resume' : 'Play'} · #{resumeTarget.position + 1}
               </Text>
@@ -194,7 +194,7 @@ export default function YoutubePlaylistScreen() {
           {videos.length > 0 ? (
             <View style={styles.overall}>
               <View style={styles.overallHead}>
-                <Ionicons name="logo-youtube" size={18} color={colors.accent} />
+                <Ionicons name="logo-youtube" size={18} color={colors.primary} />
                 <Text style={styles.overallText}>
                   {watchedCount} of {videos.length} watched
                 </Text>
@@ -219,7 +219,7 @@ export default function YoutubePlaylistScreen() {
               {refreshing ? (
                 <ActivityIndicator size="small" color={colors.textSecondary} />
               ) : (
-                <Ionicons name="refresh-outline" size={18} color={colors.text} />
+                <Ionicons name="refresh-outline" size={18} color={colors.textPrimary} />
               )}
             </Pressable>
           </View>
@@ -237,7 +237,7 @@ export default function YoutubePlaylistScreen() {
         onPress={() => router.back()}
         hitSlop={12}
         style={[styles.back, { top: insets.top + spacing.xs }]}>
-        <Ionicons name="chevron-back" size={24} color={colors.text} />
+        <Ionicons name="chevron-back" size={24} color={colors.textPrimary} />
       </Pressable>
     </View>
   );
@@ -249,11 +249,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   titleBlock: {
-    paddingHorizontal: spacing.md,
-    marginTop: -spacing.xl,
+    paddingHorizontal: spacing.base,
+    marginTop: -spacing['2xl'],
   },
   title: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.hero,
     fontWeight: '900',
     letterSpacing: -0.5,
@@ -271,20 +271,20 @@ const styles = StyleSheet.create({
   },
   badge: {
     borderWidth: 1,
-    borderColor: colors.accent,
+    borderColor: colors.primary,
     borderRadius: 4,
     paddingHorizontal: 6,
     paddingVertical: 1,
   },
   badgeText: {
-    color: colors.accent,
+    color: colors.primary,
     fontSize: 11,
     fontWeight: '700',
     letterSpacing: 0.5,
   },
   actions: {
-    paddingHorizontal: spacing.md,
-    marginTop: spacing.md,
+    paddingHorizontal: spacing.base,
+    marginTop: spacing.base,
     gap: spacing.sm,
   },
   playBtn: {
@@ -292,12 +292,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing.xs,
-    backgroundColor: '#fff',
-    borderRadius: 8,
+    backgroundColor: colors.primary,
+    borderRadius: radius.md,
     height: 48,
   },
   playText: {
-    color: '#000',
+    color: colors.onPrimary,
     fontSize: 16,
     fontWeight: '800',
   },
@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
   overall: {
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
-    padding: spacing.md,
+    padding: spacing.base,
     gap: spacing.sm,
   },
   overallHead: {
@@ -317,7 +317,7 @@ const styles = StyleSheet.create({
   },
   overallText: {
     flex: 1,
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.caption,
     fontWeight: '700',
   },
@@ -335,17 +335,17 @@ const styles = StyleSheet.create({
   },
   fill: {
     height: '100%',
-    backgroundColor: colors.accent,
+    backgroundColor: colors.primary,
   },
   sectionHead: {
     flexDirection: 'row',
     alignItems: 'baseline',
     justifyContent: 'space-between',
-    paddingHorizontal: spacing.md,
-    marginTop: spacing.md,
+    paddingHorizontal: spacing.base,
+    marginTop: spacing.base,
   },
   sectionTitle: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.heading,
     fontWeight: '800',
   },
@@ -356,20 +356,20 @@ const styles = StyleSheet.create({
   sectionTools: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
+    gap: spacing.base,
   },
   toolBtn: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   episodeList: {
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
     marginTop: spacing.sm,
     gap: spacing.sm,
   },
   episode: {
     flexDirection: 'row',
-    gap: spacing.md,
+    gap: spacing.base,
     backgroundColor: colors.surface,
     borderRadius: radius.md,
     padding: spacing.sm,
@@ -394,7 +394,7 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 15,
-    backgroundColor: 'rgba(0,0,0,0.55)',
+    backgroundColor: colors.overlay,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.7)',
     alignItems: 'center',
@@ -407,7 +407,7 @@ const styles = StyleSheet.create({
     width: 18,
     height: 18,
     borderRadius: 9,
-    backgroundColor: '#fff',
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -421,14 +421,14 @@ const styles = StyleSheet.create({
   },
   thumbFill: {
     height: '100%',
-    backgroundColor: colors.accent,
+    backgroundColor: colors.primary,
   },
   episodeBody: {
     flex: 1,
     gap: 4,
   },
   episodeTitle: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.body,
     fontWeight: '700',
   },

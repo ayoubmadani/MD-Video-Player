@@ -1,0 +1,58 @@
+name: MD Video Player - Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 12
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      # android/ is not committed (Expo Continuous Native Generation) — generate it from app.json.
+      - name: Expo prebuild
+        run: pnpm exec expo prebuild --platform android --no-install
+
+      # Release build embeds the JS bundle (a debug APK expects a Metro dev server).
+      # Signed with the debug keystore from the Expo template.
+      - name: Build APK
+        working-directory: android
+        env:
+          GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4g -XX:MaxMetaspaceSize=1g"
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: MD-Video-Player-APK
+          path: android/app/build/outputs/apk/release/app-release.apk

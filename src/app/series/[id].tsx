@@ -9,7 +9,7 @@ import { Thumb } from '@/components/thumb';
 import { getSeries, setEntryImdbId, toggleFavorite, type EpisodeRow, type SeasonRow } from '@/db/repositories';
 import { ensureThumbnail } from '@/features/library/thumbnails';
 import { refreshEntryPosterById } from '@/features/metadata/fetcher';
-import { colors, font, radius, spacing } from '@/theme/colors';
+import { colors, font, radius, spacing } from '@/theme';
 import { formatDuration } from '@/utils/format';
 
 type SeriesData = NonNullable<Awaited<ReturnType<typeof getSeries>>>;
@@ -28,7 +28,7 @@ function EpisodeItem({ episode, onPress }: { episode: EpisodeRow; onPress: () =>
   return (
     <Pressable
       onPress={onPress}
-      style={({ pressed }) => [styles.episode, pressed && { backgroundColor: colors.surfaceRaised }]}>
+      style={({ pressed }) => [styles.episode, pressed && { backgroundColor: colors.surfaceElevated }]}>
       <View style={styles.thumbWrap}>
         <Thumb
           mediaId={episode.mediaId}
@@ -39,12 +39,12 @@ function EpisodeItem({ episode, onPress }: { episode: EpisodeRow; onPress: () =>
         />
         <View style={styles.playOverlay} pointerEvents="none">
           <View style={styles.playCircle}>
-            <Ionicons name="play" size={14} color="#fff" />
+            <Ionicons name="play" size={14} color={colors.textPrimary} />
           </View>
         </View>
         {watched ? (
           <View style={styles.watchedBadge} pointerEvents="none">
-            <Ionicons name="checkmark" size={12} color="#000" />
+            <Ionicons name="checkmark" size={12} color={colors.onPrimary} />
           </View>
         ) : null}
         {!watched && fraction > 0 ? (
@@ -58,7 +58,7 @@ function EpisodeItem({ episode, onPress }: { episode: EpisodeRow; onPress: () =>
         <Text style={styles.episodeTitle} numberOfLines={2}>
           {episode.episodeNumber}. {episode.title}
         </Text>
-        <Text style={[styles.episodeMeta, resumable && { color: colors.accentSoft, fontWeight: '700' }]}>
+        <Text style={[styles.episodeMeta, resumable && { color: colors.primary, fontWeight: '700' }]}>
           {watched
             ? 'Watched'
             : resumable
@@ -179,7 +179,7 @@ export default function SeriesScreen() {
         onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
           useNativeDriver: true,
         })}
-        contentContainerStyle={{ paddingBottom: spacing.xl + insets.bottom }}>
+        contentContainerStyle={{ paddingBottom: spacing['2xl'] + insets.bottom }}>
         {/* HERO */}
         <View style={{ height: heroHeight, overflow: 'hidden', backgroundColor: colors.surface }}>
           {resumeTarget ? (
@@ -229,7 +229,7 @@ export default function SeriesScreen() {
             <Pressable
               onPress={() => playEpisode(resumeTarget)}
               style={({ pressed }) => [styles.playBtn, pressed && styles.pressed]}>
-              <Ionicons name="play" size={22} color="#000" />
+              <Ionicons name="play" size={22} color={colors.onPrimary} />
               <Text style={styles.playText}>
                 {isResume ? 'Resume' : 'Play'} · S{resumeTarget.seasonNumber}:E{resumeTarget.episodeNumber}
               </Text>
@@ -272,7 +272,7 @@ export default function SeriesScreen() {
           {allEpisodes.length > 0 ? (
             <View style={styles.overall}>
               <View style={styles.overallHead}>
-                <Ionicons name="albums-outline" size={18} color={colors.accent} />
+                <Ionicons name="albums-outline" size={18} color={colors.primary} />
                 <Text style={styles.overallText}>
                   {watchedCount} of {allEpisodes.length} episodes watched
                 </Text>
@@ -325,7 +325,7 @@ export default function SeriesScreen() {
         onPress={() => router.back()}
         hitSlop={12}
         style={[styles.back, { top: insets.top + spacing.xs }]}>
-        <Ionicons name="chevron-back" size={24} color={colors.text} />
+        <Ionicons name="chevron-back" size={24} color={colors.textPrimary} />
       </Pressable>
 
       {/* IMDb ID MODAL */}
@@ -343,7 +343,7 @@ export default function SeriesScreen() {
                 setImdbError(null);
               }}
               placeholder="tt0137523 or imdb.com/title/tt…"
-              placeholderTextColor={colors.textMuted}
+              placeholderTextColor={colors.textDisabled}
               autoCapitalize="none"
               autoCorrect={false}
               style={styles.modalInput}
@@ -396,8 +396,8 @@ function ActionButton({
       onPress={onPress}
       hitSlop={6}
       style={({ pressed }) => [styles.action, pressed && styles.pressed]}>
-      <Ionicons name={icon} size={26} color={active ? colors.accent : colors.text} />
-      <Text style={[styles.actionLabel, active && { color: colors.accent }]}>{label}</Text>
+      <Ionicons name={icon} size={26} color={active ? colors.primary : colors.textPrimary} />
+      <Text style={[styles.actionLabel, active && { color: colors.primary }]}>{label}</Text>
     </Pressable>
   );
 }
@@ -408,11 +408,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   titleBlock: {
-    paddingHorizontal: spacing.md,
-    marginTop: -spacing.xl,
+    paddingHorizontal: spacing.base,
+    marginTop: -spacing['2xl'],
   },
   title: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.hero,
     fontWeight: '900',
     letterSpacing: -0.5,
@@ -442,8 +442,8 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   actions: {
-    paddingHorizontal: spacing.md,
-    marginTop: spacing.md,
+    paddingHorizontal: spacing.base,
+    marginTop: spacing.base,
     gap: spacing.sm,
   },
   playBtn: {
@@ -451,12 +451,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing.xs,
-    backgroundColor: '#fff',
-    borderRadius: 8,
+    backgroundColor: colors.primary,
+    borderRadius: radius.md,
     height: 48,
   },
   playText: {
-    color: '#000',
+    color: colors.onPrimary,
     fontSize: 16,
     fontWeight: '800',
   },
@@ -471,7 +471,7 @@ const styles = StyleSheet.create({
   resumeText: {
     flexShrink: 1,
     maxWidth: '55%',
-    color: colors.accentSoft,
+    color: colors.primary,
     fontSize: font.caption,
     fontWeight: '700',
   },
@@ -484,7 +484,7 @@ const styles = StyleSheet.create({
   },
   fill: {
     height: '100%',
-    backgroundColor: colors.accent,
+    backgroundColor: colors.primary,
   },
   actionsRow: {
     flexDirection: 'row',
@@ -504,7 +504,7 @@ const styles = StyleSheet.create({
   overall: {
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
-    padding: spacing.md,
+    padding: spacing.base,
     gap: spacing.sm,
   },
   overallHead: {
@@ -514,7 +514,7 @@ const styles = StyleSheet.create({
   },
   overallText: {
     flex: 1,
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.caption,
     fontWeight: '700',
   },
@@ -524,18 +524,18 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   seasonRow: {
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
     gap: spacing.sm,
-    marginTop: spacing.md,
+    marginTop: spacing.base,
   },
   seasonPill: {
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
     paddingVertical: spacing.sm,
     borderRadius: 999,
-    backgroundColor: colors.surfaceRaised,
+    backgroundColor: colors.surfaceElevated,
   },
   seasonPillActive: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.primary,
   },
   seasonPillText: {
     color: colors.textSecondary,
@@ -543,17 +543,17 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   seasonPillTextActive: {
-    color: '#000',
+    color: colors.onPrimary,
   },
   sectionHead: {
     flexDirection: 'row',
     alignItems: 'baseline',
     justifyContent: 'space-between',
-    paddingHorizontal: spacing.md,
-    marginTop: spacing.md,
+    paddingHorizontal: spacing.base,
+    marginTop: spacing.base,
   },
   sectionTitle: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.heading,
     fontWeight: '800',
   },
@@ -562,13 +562,13 @@ const styles = StyleSheet.create({
     fontSize: font.caption,
   },
   episodeList: {
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
     marginTop: spacing.sm,
     gap: spacing.sm,
   },
   episode: {
     flexDirection: 'row',
-    gap: spacing.md,
+    gap: spacing.base,
     backgroundColor: colors.surface,
     borderRadius: radius.md,
     padding: spacing.sm,
@@ -593,7 +593,7 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 15,
-    backgroundColor: 'rgba(0,0,0,0.55)',
+    backgroundColor: colors.overlay,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.7)',
     alignItems: 'center',
@@ -606,7 +606,7 @@ const styles = StyleSheet.create({
     width: 18,
     height: 18,
     borderRadius: 9,
-    backgroundColor: '#fff',
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -620,14 +620,14 @@ const styles = StyleSheet.create({
   },
   thumbFill: {
     height: '100%',
-    backgroundColor: colors.accent,
+    backgroundColor: colors.primary,
   },
   episodeBody: {
     flex: 1,
     gap: 4,
   },
   episodeTitle: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.body,
     fontWeight: '700',
   },
@@ -654,19 +654,19 @@ const styles = StyleSheet.create({
     backgroundColor: colors.overlay,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: spacing.lg,
+    padding: spacing.xl,
     zIndex: 20,
   },
   modalCard: {
     width: '100%',
     maxWidth: 420,
-    backgroundColor: colors.surfaceRaised,
+    backgroundColor: colors.surfaceElevated,
     borderRadius: radius.lg,
-    padding: spacing.md,
+    padding: spacing.base,
     gap: spacing.sm,
   },
   modalTitle: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.heading,
     fontWeight: '800',
     marginBottom: spacing.xs,
@@ -682,12 +682,12 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     paddingHorizontal: spacing.sm,
     paddingVertical: 10,
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.body,
     backgroundColor: colors.background,
   },
   modalError: {
-    color: colors.accentSoft,
+    color: colors.primary,
     fontSize: font.caption,
     fontWeight: '600',
   },
@@ -695,7 +695,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    gap: spacing.md,
+    gap: spacing.base,
     marginTop: spacing.xs,
   },
   modalBtn: {
@@ -703,17 +703,17 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xs,
   },
   modalBtnText: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.body,
     fontWeight: '700',
   },
   modalBtnSave: {
-    backgroundColor: colors.accent,
+    backgroundColor: colors.primary,
     borderRadius: radius.md,
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
     paddingVertical: spacing.xs + 2,
   },
   modalBtnSaveText: {
-    color: '#fff',
+    color: colors.onPrimary,
   },
 });

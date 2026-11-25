@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { colors, font, spacing } from '@/theme/colors';
+import { colors, font, spacing } from '@/theme';
 
 export function ProgressBar({ positionMs, durationMs }: { positionMs: number | null; durationMs: number | null }) {
   if (positionMs == null || durationMs == null || durationMs <= 0) return null;
@@ -32,12 +32,12 @@ const styles = StyleSheet.create({
   },
   fill: {
     height: '100%',
-    backgroundColor: colors.accent,
+    backgroundColor: colors.primary,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: spacing.md,
+    gap: spacing.base,
     paddingVertical: spacing.sm,
   },
   rowDivider: {
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     fontSize: font.caption,
   },
   rowValue: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.caption,
     flexShrink: 1,
     textAlign: 'right',

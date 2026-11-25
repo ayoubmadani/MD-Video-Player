@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from '@/components/button';
 import { fetchTvPlaylist, hlsAsChannel } from '@/features/tv/api';
 import { deleteTvPlaylist, listTvPlaylists, saveTvPlaylist, type TvPlaylist } from '@/features/tv/store';
-import { colors, font, radius, spacing } from '@/theme/colors';
+import { colors, font, radius, spacing } from '@/theme';
 
 export default function TvPlaylistsScreen() {
   const insets = useSafeAreaInsets();
@@ -64,15 +64,15 @@ export default function TvPlaylistsScreen() {
     <View style={styles.container}>
       <View style={[styles.header, { paddingTop: insets.top + spacing.sm }]}>
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Ionicons name="chevron-back" size={26} color={colors.text} />
+          <Ionicons name="chevron-back" size={26} color={colors.textPrimary} />
         </Pressable>
         <Text style={styles.heading}>TV Playlists</Text>
       </View>
 
       <ScrollView
         contentContainerStyle={{
-          paddingHorizontal: spacing.md,
-          paddingBottom: spacing.xl + insets.bottom,
+          paddingHorizontal: spacing.base,
+          paddingBottom: spacing['2xl'] + insets.bottom,
         }}>
         <Text style={styles.hint}>
           Paste an M3U/M3U8 playlist link to add its channels to the TV tab. Channels stream over the
@@ -87,17 +87,17 @@ export default function TvPlaylistsScreen() {
             setError(null);
           }}
           placeholder="…/languages/hin.m3u or …/master.m3u8"
-          placeholderTextColor={colors.textMuted}
+          placeholderTextColor={colors.textDisabled}
           autoCapitalize="none"
           autoCorrect={false}
           style={styles.input}
         />
         {error ? <Text style={styles.error}>{error}</Text> : null}
-        <View style={{ marginTop: spacing.md }}>
+        <View style={{ marginTop: spacing.base }}>
           <Button label={busy ? 'Adding…' : 'Add playlist'} onPress={onAdd} disabled={busy || !url.trim()} />
         </View>
 
-        <Text style={[styles.fieldLabel, { marginTop: spacing.lg }]}>
+        <Text style={[styles.fieldLabel, { marginTop: spacing.xl }]}>
           {playlists.length} {playlists.length === 1 ? 'playlist' : 'playlists'} added
         </Text>
         {playlists.length === 0 ? (
@@ -107,7 +107,7 @@ export default function TvPlaylistsScreen() {
             <View key={p.id} style={styles.row}>
               <View style={styles.rowMain}>
                 <View style={styles.thumb}>
-                  <Ionicons name="tv-outline" size={18} color={colors.accent} />
+                  <Ionicons name="tv-outline" size={18} color={colors.primary} />
                 </View>
                 <View style={styles.rowBody}>
                   <Text style={styles.rowTitle} numberOfLines={2}>
@@ -119,7 +119,7 @@ export default function TvPlaylistsScreen() {
                 </View>
               </View>
               <Pressable hitSlop={8} onPress={() => onDelete(p)} style={styles.delete}>
-                <Ionicons name="trash-outline" size={16} color={colors.textMuted} />
+                <Ionicons name="trash-outline" size={16} color={colors.textDisabled} />
               </Pressable>
             </View>
           ))
@@ -138,16 +138,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
     paddingBottom: spacing.sm,
   },
   heading: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.title,
     fontWeight: '900',
   },
   hint: {
-    color: colors.textMuted,
+    color: colors.textDisabled,
     fontSize: font.small,
     lineHeight: font.small * 1.5,
   },
@@ -155,29 +155,29 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     fontSize: font.caption,
     fontWeight: '700',
-    marginTop: spacing.md,
+    marginTop: spacing.base,
     marginBottom: spacing.xs,
   },
   input: {
-    backgroundColor: colors.surfaceRaised,
-    color: colors.text,
+    backgroundColor: colors.surfaceElevated,
+    color: colors.textPrimary,
     borderRadius: radius.md,
     borderWidth: 1,
     borderColor: colors.border,
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
     paddingVertical: 10,
     fontSize: font.body,
   },
   error: {
-    color: colors.accentSoft,
+    color: colors.primary,
     fontSize: font.caption,
     marginTop: spacing.xs,
     fontWeight: '600',
   },
   empty: {
-    color: colors.textMuted,
+    color: colors.textDisabled,
     fontSize: font.small,
-    paddingVertical: spacing.md,
+    paddingVertical: spacing.base,
   },
   row: {
     flexDirection: 'row',
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     width: 64,
     height: 36,
     borderRadius: radius.sm,
-    backgroundColor: colors.surfaceRaised,
+    backgroundColor: colors.surfaceElevated,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
@@ -206,17 +206,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   rowTitle: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.body,
     fontWeight: '700',
   },
   rowMeta: {
-    color: colors.textMuted,
+    color: colors.textDisabled,
     fontSize: font.small,
     marginTop: 2,
   },
   delete: {
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
     paddingVertical: spacing.sm,
   },
 });

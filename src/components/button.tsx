@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, Text, type ViewStyle } from 'react-native';
 
-import { colors, font, radius, spacing } from '@/theme/colors';
+import { colors, layout, radius, spacing, typography } from '@/theme';
 
 export function Button({
   label,
@@ -21,16 +21,17 @@ export function Button({
       disabled={disabled}
       style={({ pressed }) => [
         styles.base,
-        variant === 'primary' && styles.primary,
+        variant === 'primary' && (pressed ? styles.primaryPressed : styles.primary),
         variant === 'secondary' && styles.secondary,
         variant === 'ghost' && styles.ghost,
-        pressed && { opacity: 0.7 },
+        pressed && variant !== 'primary' && { opacity: 0.7 },
         disabled && { opacity: 0.4 },
         style,
       ]}>
       <Text
         style={[
           styles.label,
+          variant === 'primary' && { color: colors.onPrimary },
           variant === 'ghost' && { color: colors.textSecondary },
         ]}>
         {label}
@@ -41,24 +42,28 @@ export function Button({
 
 const styles = StyleSheet.create({
   base: {
+    minHeight: layout.buttonHeight,
     borderRadius: radius.md,
-    paddingVertical: 14,
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: spacing.xl,
     alignItems: 'center',
     justifyContent: 'center',
   },
   primary: {
-    backgroundColor: colors.accent,
+    backgroundColor: colors.primary,
+  },
+  primaryPressed: {
+    backgroundColor: colors.primaryPressed,
   },
   secondary: {
-    backgroundColor: colors.surfaceHover,
+    backgroundColor: colors.surfaceElevated,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: colors.border,
   },
   ghost: {
     backgroundColor: 'transparent',
   },
   label: {
-    color: colors.text,
-    fontSize: font.body,
-    fontWeight: '700',
+    ...typography.button,
+    color: colors.textPrimary,
   },
 });

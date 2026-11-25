@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Thumb } from '@/components/thumb';
 import { searchLibrary, type SearchResult } from '@/db/repositories';
-import { colors, font, radius, spacing } from '@/theme/colors';
+import { colors, font, radius, spacing } from '@/theme';
 
 export default function SearchScreen() {
   const insets = useSafeAreaInsets();
@@ -40,16 +40,16 @@ export default function SearchScreen() {
     <View style={styles.container}>
       <View style={[styles.headerRow, { paddingTop: insets.top + spacing.sm }]}>
         <Pressable onPress={() => router.back()} hitSlop={12} style={styles.closeBtn}>
-          <Ionicons name="close" size={24} color={colors.text} />
+          <Ionicons name="close" size={24} color={colors.textPrimary} />
         </Pressable>
         <Text style={styles.heading}>Search</Text>
       </View>
-      <View style={{ flex: 1, paddingHorizontal: spacing.md }}>
+      <View style={{ flex: 1, paddingHorizontal: spacing.base }}>
       <TextInput
         value={query}
         onChangeText={setQuery}
         placeholder="Movies, series, episodes, file names"
-        placeholderTextColor={colors.textMuted}
+        placeholderTextColor={colors.textDisabled}
         style={styles.input}
         autoCorrect={false}
         autoCapitalize="none"
@@ -65,7 +65,7 @@ export default function SearchScreen() {
         sections={sections}
         keyExtractor={(item) => `${item.kind}-${item.id}`}
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{ paddingBottom: spacing.xl + 72 }}
+        contentContainerStyle={{ paddingBottom: spacing['2xl'] + 72 }}
         renderSectionHeader={({ section }) => <Text style={styles.sectionTitle}>{section.title}</Text>}
         ListEmptyComponent={
           query.trim() ? (
@@ -76,7 +76,7 @@ export default function SearchScreen() {
         }
         renderItem={({ item }) => (
           <Pressable
-            style={({ pressed }) => [styles.row, pressed && { backgroundColor: colors.surfaceRaised }]}
+            style={({ pressed }) => [styles.row, pressed && { backgroundColor: colors.surfaceElevated }]}
             onPress={() => {
               if (item.kind === 'episode') {
                 if (item.mediaId) {
@@ -126,25 +126,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
     marginBottom: spacing.sm,
   },
   closeBtn: {
     padding: 2,
   },
   heading: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.hero,
     fontWeight: '900',
   },
   input: {
-    backgroundColor: colors.surfaceRaised,
-    color: colors.text,
-    borderRadius: radius.md,
-    paddingHorizontal: spacing.md,
+    backgroundColor: colors.surface,
+    color: colors.textPrimary,
+    borderRadius: radius.field,
+    paddingHorizontal: spacing.base,
     paddingVertical: 12,
     fontSize: font.body,
-    marginBottom: spacing.md,
+    marginBottom: spacing.base,
   },
   count: {
     color: colors.textSecondary,
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    gap: spacing.md,
+    gap: spacing.base,
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.sm,
     borderRadius: radius.md,
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
     gap: 2,
   },
   rowTitle: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.body,
     fontWeight: '700',
   },
@@ -178,13 +178,13 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     letterSpacing: 1,
     textTransform: 'uppercase',
-    marginTop: spacing.md,
+    marginTop: spacing.base,
     marginBottom: spacing.sm,
   },
   empty: {
-    color: colors.textMuted,
+    color: colors.textDisabled,
     textAlign: 'center',
-    marginTop: spacing.xl,
+    marginTop: spacing['2xl'],
     fontSize: font.body,
   },
 });

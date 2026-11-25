@@ -11,7 +11,7 @@ import { getMovie, setMediaImdbId, toggleFavorite, type MovieDetail } from '@/db
 import { qualityOf } from '@/features/classification/parse';
 import { ensureThumbnail } from '@/features/library/thumbnails';
 import { refreshPosterById } from '@/features/metadata/fetcher';
-import { colors, font, radius, spacing } from '@/theme/colors';
+import { colors, font, radius, spacing } from '@/theme';
 import { formatBytes, formatDuration } from '@/utils/format';
 
 export default function MovieScreen() {
@@ -115,7 +115,7 @@ export default function MovieScreen() {
         onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
           useNativeDriver: true,
         })}
-        contentContainerStyle={{ paddingBottom: spacing.xl + insets.bottom }}>
+        contentContainerStyle={{ paddingBottom: spacing['2xl'] + insets.bottom }}>
         {/* HERO */}
         <View style={{ height: heroHeight, overflow: 'hidden' }}>
           <Animated.View
@@ -163,7 +163,7 @@ export default function MovieScreen() {
           <Pressable
             onPress={play}
             style={({ pressed }) => [styles.playBtn, pressed && styles.pressed]}>
-            <Ionicons name="play" size={22} color="#000" />
+            <Ionicons name="play" size={22} color={colors.onPrimary} />
             <Text style={styles.playText}>{resume ? 'Resume' : 'Play'}</Text>
           </Pressable>
 
@@ -225,7 +225,7 @@ export default function MovieScreen() {
                 <Ionicons
                   name={movie.completed ? 'checkmark-circle' : resume ? 'play-circle' : 'ellipse-outline'}
                   size={22}
-                  color={movie.completed || resume ? colors.accent : colors.textSecondary}
+                  color={movie.completed || resume ? colors.primary : colors.textSecondary}
                 />
                 <Text style={extra.progressStatus}>
                   {movie.completed
@@ -289,7 +289,7 @@ export default function MovieScreen() {
         onPress={() => router.back()}
         hitSlop={12}
         style={[styles.back, { top: insets.top + spacing.xs }]}>
-        <Ionicons name="chevron-back" size={24} color={colors.text} />
+        <Ionicons name="chevron-back" size={24} color={colors.textPrimary} />
       </Pressable>
 
       {/* IMDb ID MODAL */}
@@ -307,7 +307,7 @@ export default function MovieScreen() {
                 setImdbError(null);
               }}
               placeholder="tt0111161 or imdb.com/title/tt…"
-              placeholderTextColor={colors.textMuted}
+              placeholderTextColor={colors.textDisabled}
               autoCapitalize="none"
               autoCorrect={false}
               style={styles.modalInput}
@@ -346,18 +346,18 @@ function normalizeImdbId(raw: string): string | null {
 
 const extra = StyleSheet.create({
   section: {
-    marginTop: spacing.md,
+    marginTop: spacing.base,
     gap: spacing.sm,
   },
   sectionTitle: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.heading,
     fontWeight: '800',
   },
   progressCard: {
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
-    padding: spacing.md,
+    padding: spacing.base,
     gap: spacing.sm,
   },
   progressHead: {
@@ -367,7 +367,7 @@ const extra = StyleSheet.create({
   },
   progressStatus: {
     flex: 1,
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.caption,
     fontWeight: '700',
   },
@@ -386,7 +386,7 @@ const extra = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
-    padding: spacing.md,
+    padding: spacing.base,
     gap: 6,
   },
   tileLabel: {
@@ -397,7 +397,7 @@ const extra = StyleSheet.create({
     letterSpacing: 0.6,
   },
   tileValue: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.caption,
     fontWeight: '800',
   },
@@ -407,10 +407,10 @@ const extra = StyleSheet.create({
     gap: spacing.sm,
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
-    padding: spacing.md,
+    padding: spacing.base,
   },
   pathText: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.caption,
     marginTop: 2,
   },
@@ -419,7 +419,7 @@ const extra = StyleSheet.create({
 function Tile({ icon, label, value }: { icon: keyof typeof Ionicons.glyphMap; label: string; value: string }) {
   return (
     <View style={extra.tile}>
-      <Ionicons name={icon} size={20} color={colors.accent} />
+      <Ionicons name={icon} size={20} color={colors.primary} />
       <Text style={extra.tileLabel}>{label}</Text>
       <Text style={extra.tileValue} numberOfLines={2}>
         {value}
@@ -444,8 +444,8 @@ function ActionButton({
       onPress={onPress}
       hitSlop={6}
       style={({ pressed }) => [styles.action, pressed && styles.pressed]}>
-      <Ionicons name={icon} size={26} color={active ? colors.accent : colors.text} />
-      <Text style={[styles.actionLabel, active && { color: colors.accent }]}>{label}</Text>
+      <Ionicons name={icon} size={26} color={active ? colors.primary : colors.textPrimary} />
+      <Text style={[styles.actionLabel, active && { color: colors.primary }]}>{label}</Text>
     </Pressable>
   );
 }
@@ -467,11 +467,11 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   titleBlock: {
-    paddingHorizontal: spacing.md,
-    marginTop: -spacing.xl,
+    paddingHorizontal: spacing.base,
+    marginTop: -spacing['2xl'],
   },
   title: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.hero,
     fontWeight: '900',
     letterSpacing: -0.5,
@@ -500,8 +500,8 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   body: {
-    paddingHorizontal: spacing.md,
-    marginTop: spacing.md,
+    paddingHorizontal: spacing.base,
+    marginTop: spacing.base,
     gap: spacing.sm,
   },
   playBtn: {
@@ -509,12 +509,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing.xs,
-    backgroundColor: '#fff',
-    borderRadius: 8,
+    backgroundColor: colors.primary,
+    borderRadius: radius.md,
     height: 48,
   },
   playText: {
-    color: '#000',
+    color: colors.onPrimary,
     fontSize: 17,
     fontWeight: '800',
   },
@@ -535,16 +535,16 @@ const styles = StyleSheet.create({
   },
   progressFill: {
     height: '100%',
-    backgroundColor: colors.accent,
+    backgroundColor: colors.primary,
   },
   resumeText: {
-    color: colors.accentSoft,
+    color: colors.primary,
     fontSize: font.caption,
     fontWeight: '700',
   },
   actionsRow: {
     flexDirection: 'row',
-    gap: spacing.lg ?? 28,
+    gap: spacing.xl ?? 28,
     paddingVertical: spacing.sm,
   },
   action: {
@@ -573,18 +573,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xs,
   },
   statText: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.caption,
     fontWeight: '600',
   },
   card: {
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
-    padding: spacing.md,
+    padding: spacing.base,
     marginTop: spacing.xs,
   },
   cardTitle: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.heading,
     fontWeight: '800',
     marginBottom: spacing.xs,
@@ -608,15 +608,15 @@ const styles = StyleSheet.create({
     backgroundColor: colors.overlay,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: spacing.lg,
+    padding: spacing.xl,
     zIndex: 20,
   },
   modalCard: {
     width: '100%',
     maxWidth: 420,
-    backgroundColor: colors.surfaceRaised,
+    backgroundColor: colors.surfaceElevated,
     borderRadius: radius.lg,
-    padding: spacing.md,
+    padding: spacing.base,
     gap: spacing.sm,
   },
   modalHint: {
@@ -630,12 +630,12 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     paddingHorizontal: spacing.sm,
     paddingVertical: 10,
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.body,
     backgroundColor: colors.background,
   },
   modalError: {
-    color: colors.accentSoft,
+    color: colors.primary,
     fontSize: font.caption,
     fontWeight: '600',
   },
@@ -643,7 +643,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
     alignItems: 'center',
-    gap: spacing.md,
+    gap: spacing.base,
     marginTop: spacing.xs,
   },
   modalBtn: {
@@ -651,17 +651,17 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xs,
   },
   modalBtnText: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.body,
     fontWeight: '700',
   },
   modalBtnSave: {
-    backgroundColor: colors.accent,
+    backgroundColor: colors.primary,
     borderRadius: radius.md,
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
     paddingVertical: spacing.xs + 2,
   },
   modalBtnSaveText: {
-    color: '#fff',
+    color: colors.onPrimary,
   },
 });

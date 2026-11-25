@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { colors, font, radius, spacing } from '@/theme/colors';
+import { colors, font, radius, spacing } from '@/theme';
 
 type Icon = keyof typeof Ionicons.glyphMap;
 
@@ -184,7 +184,7 @@ function SectionCard({
         accessibilityRole="button"
         accessibilityState={{ expanded: open }}>
         <View style={styles.badge}>
-          <Ionicons name={section.icon} size={20} color={colors.accent} />
+          <Ionicons name={section.icon} size={20} color={colors.primary} />
           <View style={styles.badgeNum}>
             <Text style={styles.badgeNumText}>{index + 1}</Text>
           </View>
@@ -200,7 +200,7 @@ function SectionCard({
         <Ionicons
           name={open ? 'chevron-up' : 'chevron-down'}
           size={20}
-          color={colors.textMuted}
+          color={colors.textDisabled}
         />
       </Pressable>
 
@@ -210,7 +210,7 @@ function SectionCard({
             <View style={styles.chipGrid}>
               {section.chips.map((c) => (
                 <View key={c.label} style={styles.chip}>
-                  <Ionicons name={c.icon} size={18} color={colors.accent} />
+                  <Ionicons name={c.icon} size={18} color={colors.primary} />
                   <View style={{ flex: 1 }}>
                     <Text style={styles.chipLabel}>{c.label}</Text>
                     <Text style={styles.chipAction}>{c.action}</Text>
@@ -240,7 +240,7 @@ function SectionCard({
                     <Ionicons
                       name={copied ? 'checkmark' : 'copy-outline'}
                       size={16}
-                      color={copied ? colors.background : colors.accent}
+                      color={copied ? colors.background : colors.primary}
                     />
                     <Text style={[styles.copyText, copied && { color: colors.background }]}>
                       {copied ? 'Copied' : 'Copy'}
@@ -261,7 +261,7 @@ function SectionCard({
                   <Ionicons
                     name={n.type === 'folder' ? 'folder-open' : 'videocam-outline'}
                     size={16}
-                    color={n.type === 'folder' ? colors.accent : colors.textMuted}
+                    color={n.type === 'folder' ? colors.primary : colors.textDisabled}
                   />
                   <Text
                     style={[styles.treeName, n.type === 'folder' && styles.treeFolder]}
@@ -321,7 +321,7 @@ export default function HowToUseScreen() {
           hitSlop={12}
           style={styles.backBtn}
           accessibilityLabel="Go back">
-          <Ionicons name="chevron-back" size={22} color={colors.text} />
+          <Ionicons name="chevron-back" size={22} color={colors.textPrimary} />
         </Pressable>
         <Text style={styles.heading}>How to use</Text>
         <Pressable onPress={toggleAll} hitSlop={10}>
@@ -332,14 +332,14 @@ export default function HowToUseScreen() {
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
-          paddingHorizontal: spacing.md,
+          paddingHorizontal: spacing.base,
           paddingTop: spacing.sm,
-          paddingBottom: spacing.xl + insets.bottom,
-          gap: spacing.md,
+          paddingBottom: spacing['2xl'] + insets.bottom,
+          gap: spacing.base,
         }}>
         <View style={styles.hero}>
           <View style={styles.heroIcon}>
-            <Ionicons name="film-outline" size={26} color={colors.accent} />
+            <Ionicons name="film-outline" size={26} color={colors.primary} />
           </View>
           <View style={{ flex: 1, gap: 4 }}>
             <Text style={styles.heroTitle}>Welcome to WatchNow</Text>
@@ -357,7 +357,7 @@ export default function HowToUseScreen() {
             { icon: 'lock-closed-outline' as Icon, text: 'Private' },
           ].map((p) => (
             <View key={p.text} style={styles.pill}>
-              <Ionicons name={p.icon} size={12} color={colors.textMuted} />
+              <Ionicons name={p.icon} size={12} color={colors.textDisabled} />
               <Text style={styles.pillText}>{p.text}</Text>
             </View>
           ))}
@@ -374,7 +374,7 @@ export default function HowToUseScreen() {
         ))}
 
         <View style={styles.footer}>
-          <Ionicons name="bulb-outline" size={16} color={colors.accent} />
+          <Ionicons name="bulb-outline" size={16} color={colors.primary} />
           <Text style={styles.footerText}>
             Tip: you can come back to this guide anytime from Settings.
           </Text>
@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.base,
     paddingBottom: spacing.sm,
   },
   backBtn: {
@@ -406,12 +406,12 @@ const styles = StyleSheet.create({
   },
   heading: {
     flex: 1,
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.title,
     fontWeight: '900',
   },
   toggleAll: {
-    color: colors.accent,
+    color: colors.primary,
     fontSize: font.body * 0.9,
     fontWeight: '700',
   },
@@ -419,29 +419,29 @@ const styles = StyleSheet.create({
   hero: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
+    gap: spacing.base,
     backgroundColor: colors.surface,
     borderRadius: radius.md,
-    padding: spacing.md,
+    padding: spacing.base,
     borderWidth: 1,
-    borderColor: colors.accent,
+    borderColor: colors.primary,
   },
   heroIcon: {
     width: 48,
     height: 48,
     borderRadius: 24,
     borderWidth: 1.5,
-    borderColor: colors.accent,
+    borderColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   heroTitle: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.heading,
     fontWeight: '900',
   },
   intro: {
-    color: colors.textMuted,
+    color: colors.textDisabled,
     fontSize: font.body,
     lineHeight: font.body * 1.45,
   },
@@ -461,7 +461,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
   },
   pillText: {
-    color: colors.textMuted,
+    color: colors.textDisabled,
     fontSize: font.body * 0.8,
     fontWeight: '600',
   },
@@ -474,20 +474,20 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   cardOpen: {
-    borderColor: colors.accent,
+    borderColor: colors.primary,
   },
   cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
-    padding: spacing.md,
+    gap: spacing.base,
+    padding: spacing.base,
   },
   badge: {
     width: 40,
     height: 40,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: colors.accent,
+    borderColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -498,7 +498,7 @@ const styles = StyleSheet.create({
     width: 18,
     height: 18,
     borderRadius: 9,
-    backgroundColor: colors.accent,
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -508,18 +508,18 @@ const styles = StyleSheet.create({
     fontWeight: '900',
   },
   cardTitle: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.heading,
     fontWeight: '800',
   },
   cardSummary: {
-    color: colors.textMuted,
+    color: colors.textDisabled,
     fontSize: font.body * 0.88,
     marginTop: 2,
   },
   cardBody: {
-    paddingHorizontal: spacing.md,
-    paddingBottom: spacing.md,
+    paddingHorizontal: spacing.base,
+    paddingBottom: spacing.base,
     gap: spacing.sm,
   },
 
@@ -537,15 +537,15 @@ const styles = StyleSheet.create({
     padding: spacing.sm,
     borderRadius: radius.md,
     borderWidth: 1,
-    borderColor: colors.textMuted,
+    borderColor: colors.textDisabled,
   },
   chipLabel: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.body * 0.88,
     fontWeight: '700',
   },
   chipAction: {
-    color: colors.textMuted,
+    color: colors.textDisabled,
     fontSize: font.body * 0.8,
   },
 
@@ -557,7 +557,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   linkLabel: {
-    color: colors.textMuted,
+    color: colors.textDisabled,
     fontSize: font.body * 0.8,
     fontWeight: '700',
   },
@@ -568,7 +568,7 @@ const styles = StyleSheet.create({
   },
   linkUrl: {
     flex: 1,
-    color: colors.text,
+    color: colors.textPrimary,
     fontSize: font.body * 0.82,
     fontFamily: Platform.select({ ios: 'Menlo', android: 'monospace' }),
   },
@@ -580,13 +580,13 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: colors.accent,
+    borderColor: colors.primary,
   },
   copyBtnDone: {
-    backgroundColor: colors.accent,
+    backgroundColor: colors.primary,
   },
   copyText: {
-    color: colors.accent,
+    color: colors.primary,
     fontSize: font.body * 0.85,
     fontWeight: '800',
   },
@@ -611,7 +611,7 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     marginLeft: 4,
     borderLeftWidth: 1,
-    borderLeftColor: colors.textMuted,
+    borderLeftColor: colors.textDisabled,
     opacity: 0.5,
   },
   treeName: {
@@ -621,7 +621,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   treeFolder: {
-    color: colors.text,
+    color: colors.textPrimary,
     fontWeight: '700',
   },
   treeTag: {
@@ -629,10 +629,10 @@ const styles = StyleSheet.create({
     paddingVertical: 1,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: colors.accent,
+    borderColor: colors.primary,
   },
   treeTagText: {
-    color: colors.accent,
+    color: colors.primary,
     fontSize: font.body * 0.7,
     fontWeight: '700',
   },
@@ -646,7 +646,7 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: colors.accent,
+    backgroundColor: colors.primary,
     marginTop: font.body * 0.6,
   },
   stepText: {
@@ -664,7 +664,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
   },
   footerText: {
-    color: colors.textMuted,
+    color: colors.textDisabled,
     fontSize: font.body * 0.85,
     flexShrink: 1,
   },

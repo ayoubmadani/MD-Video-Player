@@ -5,7 +5,7 @@ import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useBlurTarget } from '@/lib/blur';
-import { colors } from '@/theme/colors';
+import { colors } from '@/theme';
 
 function TabBarBackground() {
   const target = useBlurTarget();
@@ -20,7 +20,7 @@ function TabBarBackground() {
           blurTarget={target ?? { current: null }}
           style={StyleSheet.absoluteFill}
         />
-        <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(1, 1, 1, 0.57)' }]} />
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: colors.backdrop }]} />
       </View>
     </View>
   );
@@ -32,7 +32,7 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.text,
+        tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textSecondary,
         tabBarStyle: {
           backgroundColor: 'transparent',
