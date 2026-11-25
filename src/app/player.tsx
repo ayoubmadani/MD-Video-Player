@@ -26,6 +26,7 @@ import {
 import { colors, font, spacing } from '@/theme';
 import { formatDuration } from '@/utils/format';
 import { VlcVideoView, type VlcVideoViewHandle } from '../../modules/vlc-player/src/VlcPlayerView';
+import { getVideoSize } from '../../modules/vlc-player/src/video-size';
 
 type EntryMeta = Awaited<ReturnType<typeof entryForMedia>>;
 
@@ -537,8 +538,25 @@ export default function PlayerScreen() {
   //   setImmersive(false);
   // }, []);
 
+  // Match the screen to the video: portrait clips (phone recordings, shorts) play upright,
+  // everything else in landscape. Size comes from file metadata with rotation applied.
+  const mediaUri = media?.documentUri;
   useEffect(() => {
-    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE).catch(() => undefined);
+    if (!mediaUri) return;
+    let cancelled = false;
+    getVideoSize(mediaUri).then((size) => {
+      if (cancelled) return;
+      const portrait = !!size && size.height > size.width;
+      ScreenOrientation.lockAsync(
+        portrait ? ScreenOrientation.OrientationLock.PORTRAIT_UP : ScreenOrientation.OrientationLock.LANDSCAPE,
+      ).catch(() => undefined);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [mediaUri]);
+
+  useEffect(() => {
     return () => {
       ScreenOrientation.unlockAsync().catch(() => undefined);
     };
