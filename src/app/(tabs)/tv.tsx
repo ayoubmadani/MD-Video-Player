@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TvLockGate } from '@/components/tv-lock-gate';
 import { Thumb } from '@/components/thumb';
 import { listTvChannels, setTvFavorite, type TvChannel } from '@/features/tv/store';
+import { setZapList } from '@/features/tv/zap-list';
 import { colors, font, radius, spacing } from '@/theme';
 
 const LOGO = 56;
@@ -111,11 +112,13 @@ function TvScreenContent() {
       .map(([title, data]) => ({ title, data: [data] }));
   }, [channels, query, showSaved]);
 
-  const onPlay = (c: TvChannel) =>
+  const onPlay = (c: TvChannel) => {
+    setZapList(sections.flatMap((sec) => sec.data.flat()).map((x) => ({ streamUrl: x.streamUrl, name: x.name })));
     router.push({
       pathname: '/tv-player',
       params: { stream: c.streamUrl, name: c.name },
     } as never);
+  };
 
   return (
     <View style={[styles.container, { paddingTop: insets.top + spacing.sm }]}>

@@ -9,6 +9,7 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-nati
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { TvLockGate } from '@/components/tv-lock-gate';
+import { getZapList, zapIndex } from '@/features/tv/zap-list';
 import { colors, font, radius, spacing } from '@/theme';
 
 // Distinguish "no internet" from "stream dead/geo-blocked": if the device can
@@ -26,7 +27,12 @@ async function probeReachable(url: string): Promise<boolean> {
 }
 
 function TvPlayerScreenContent() {
-  const { stream, name } = useLocalSearchParams<{ stream: string; name: string }>();
+  const params = useLocalSearchParams<{ stream: string; name: string }>();
+  const [zapList] = useState(getZapList);
+  const [channel, setChannel] = useState({ stream: String(params.stream ?? ''), name: params.name ?? '' });
+  const { stream, name } = channel;
+  const position = zapList.findIndex((c) => c.streamUrl === stream);
+  const canZap = position >= 0 && zapList.length > 1;
   const insets = useSafeAreaInsets();
   const [error, setError] = useState<string | null>(null);
   const [probing, setProbing] = useState(false);
@@ -92,6 +98,24 @@ function TvPlayerScreenContent() {
     }
   });
 
+  const zap = useCallback(
+    (step: number) => {
+      const next = zapList[zapIndex(zapList, stream, step)];
+      if (!next || next.streamUrl === stream) return;
+      if (retryTimer.current) clearTimeout(retryTimer.current);
+      attemptsRef.current = 0;
+      setReconnecting(0);
+      setProbing(false);
+      setError(null);
+      setChannel({ stream: next.streamUrl, name: next.name });
+      player
+        .replaceAsync(next.streamUrl)
+        .then(() => player.play())
+        .catch(() => undefined);
+    },
+    [player, stream, zapList],
+  );
+
   const retry = () => {
     attemptsRef.current = 0;
     setReconnecting(0);
@@ -120,10 +144,38 @@ function TvPlayerScreenContent() {
           <Ionicons name="chevron-back" size={24} color={colors.textPrimary} />
         </Pressable>
         <Text style={styles.title} numberOfLines={1}>
-          {name ?? 'Live TV'}
+          {name || 'Live TV'}
         </Text>
-        <View style={{ width: 38 }} />
+        {canZap ? (
+          <Text style={styles.position}>
+            {position + 1}/{zapList.length}
+          </Text>
+        ) : (
+          <View style={{ width: 38 }} />
+        )}
       </View>
+
+      {/* CHANNEL SWITCH */}
+      {canZap ? (
+        <>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Previous channel"
+            onPress={() => zap(-1)}
+            hitSlop={8}
+            style={({ pressed }) => [styles.zapBtn, { left: insets.left + spacing.base }, pressed && styles.zapPressed]}>
+            <Ionicons name="chevron-back" size={30} color={colors.textPrimary} />
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Next channel"
+            onPress={() => zap(1)}
+            hitSlop={8}
+            style={({ pressed }) => [styles.zapBtn, { right: insets.right + spacing.base }, pressed && styles.zapPressed]}>
+            <Ionicons name="chevron-forward" size={30} color={colors.textPrimary} />
+          </Pressable>
+        </>
+      ) : null}
 
       {reconnecting > 0 && !error && !probing ? (
         <View style={styles.errorOverlay} pointerEvents="none">
@@ -192,6 +244,29 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
     fontSize: font.heading,
     fontWeight: '800',
+  },
+  position: {
+    color: colors.textSecondary,
+    fontSize: font.caption,
+    fontWeight: '700',
+    minWidth: 38,
+    textAlign: 'right',
+    paddingRight: spacing.sm,
+  },
+  zapBtn: {
+    position: 'absolute',
+    top: '50%',
+    marginTop: -28,
+    width: 56,
+    height: 56,
+    borderRadius: radius.full,
+    backgroundColor: colors.overlay,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 5,
+  },
+  zapPressed: {
+    backgroundColor: colors.primarySoft,
   },
   errorOverlay: {
     position: 'absolute',
