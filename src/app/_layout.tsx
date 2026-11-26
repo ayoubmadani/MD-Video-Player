@@ -6,7 +6,9 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 
+import { AppLockGate } from '@/components/app-lock-gate';
 import { getDb } from '@/db/database';
+import { loadLockConfig } from '@/features/lock/lock';
 import { colors } from '@/theme';
 
 SplashScreen.preventAutoHideAsync().catch(() => undefined);
@@ -19,6 +21,7 @@ export default function RootLayout() {
       SplashScreen.hideAsync().catch(() => undefined);
     };
     getDb()
+      .then(() => loadLockConfig())
       .then(finish)
       .catch(finish);
   }, []);
@@ -41,6 +44,7 @@ export default function RootLayout() {
         <Stack.Screen name="tv-player" options={{ animation: 'fade' }} />
         <Stack.Screen name="youtube-player" options={{ animation: 'fade' }} />
       </Stack>
+      <AppLockGate />
     </>
   );
 }

@@ -10,12 +10,23 @@ import {
   type ParsedChannel,
 } from './parse';
 
+const PLAYLIST_TIMEOUT_MS = 120_000;
+
 export type FetchedTvPlaylist = { name: string; content: M3uContent };
 
 export async function fetchTvPlaylist(url: string): Promise<FetchedTvPlaylist> {
-  const res = await fetch(url, { signal: AbortSignal.timeout(20000) });
-  if (!res.ok) throw new Error(`Server responded ${res.status}`);
-  const text = await res.text();
+  // Big IPTV lists (tens of thousands of channels) on slow servers can take well over 20s.
+  let text: string;
+  try {
+    const res = await fetch(url, { signal: AbortSignal.timeout(PLAYLIST_TIMEOUT_MS) });
+    if (!res.ok) throw new Error(`Server responded ${res.status}`);
+    text = await res.text();
+  } catch (err) {
+    if (err instanceof Error && (err.name === 'TimeoutError' || err.name === 'AbortError')) {
+      throw new Error('The playlist server took too long to respond. Check your connection and try again.');
+    }
+    throw err;
+  }
   const content = parseM3u(text, url);
   if (content.kind === 'invalid') throw new Error('Not a valid M3U/M3U8 file');
   return { name: defaultPlaylistName(url, content.kind), content };

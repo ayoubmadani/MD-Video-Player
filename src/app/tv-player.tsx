@@ -4,15 +4,18 @@ import { router, useLocalSearchParams } from 'expo-router';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { StatusBar } from 'expo-status-bar';
 import { useVideoPlayer, VideoView } from 'expo-video';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { TvLockGate } from '@/components/tv-lock-gate';
 import { colors, font, radius, spacing } from '@/theme';
 
 // Distinguish "no internet" from "stream dead/geo-blocked": if the device can
 // reach the URL, the failure is the stream itself. HEAD is enough; some servers
 // reject it (405) but answering at all means the network path works.
+const MAX_AUTO_RETRIES = 6;
+
 async function probeReachable(url: string): Promise<boolean> {
   try {
     const res = await fetch(url, { method: 'HEAD', signal: AbortSignal.timeout(6000) });
@@ -22,11 +25,14 @@ async function probeReachable(url: string): Promise<boolean> {
   }
 }
 
-export default function TvPlayerScreen() {
+function TvPlayerScreenContent() {
   const { stream, name } = useLocalSearchParams<{ stream: string; name: string }>();
   const insets = useSafeAreaInsets();
   const [error, setError] = useState<string | null>(null);
   const [probing, setProbing] = useState(false);
+  const [reconnecting, setReconnecting] = useState(0); // current auto-retry attempt, 0 = none
+  const attemptsRef = useRef(0);
+  const retryTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const player = useVideoPlayer(String(stream ?? ''), (p) => {
     p.keepScreenOnWhilePlaying = true;
@@ -40,8 +46,32 @@ export default function TvPlayerScreen() {
     };
   }, []);
 
+  useEffect(() => {
+    return () => {
+      if (retryTimer.current) clearTimeout(retryTimer.current);
+    };
+  }, []);
+
+  const reload = useCallback(() => {
+    player
+      .replaceAsync(String(stream ?? ''))
+      .then(() => player.play())
+      .catch(() => undefined);
+  }, [player, stream]);
+
   useEventListener(player, 'statusChange', ({ status }) => {
+    if (status === 'error' && attemptsRef.current < MAX_AUTO_RETRIES) {
+      // Live IPTV streams drop often (network blips, server resets): reconnect quietly first.
+      attemptsRef.current += 1;
+      setReconnecting(attemptsRef.current);
+      setError(null);
+      const delay = Math.min(2000 * 2 ** (attemptsRef.current - 1), 15000);
+      if (retryTimer.current) clearTimeout(retryTimer.current);
+      retryTimer.current = setTimeout(reload, delay);
+      return;
+    }
     if (status === 'error') {
+      setReconnecting(0);
       setProbing(true);
       setError(null);
       probeReachable(String(stream ?? ''))
@@ -55,10 +85,16 @@ export default function TvPlayerScreen() {
         .finally(() => setProbing(false));
       return;
     }
-    if (status === 'readyToPlay') setError(null);
+    if (status === 'readyToPlay') {
+      attemptsRef.current = 0;
+      setReconnecting(0);
+      setError(null);
+    }
   });
 
   const retry = () => {
+    attemptsRef.current = 0;
+    setReconnecting(0);
     setError(null);
     player.replaceAsync(String(stream ?? '')).then(() => player.play()).catch(() => setError('Could not load the stream.'));
   };
@@ -88,6 +124,17 @@ export default function TvPlayerScreen() {
         </Text>
         <View style={{ width: 38 }} />
       </View>
+
+      {reconnecting > 0 && !error && !probing ? (
+        <View style={styles.errorOverlay} pointerEvents="none">
+          <View style={styles.errorCard}>
+            <ActivityIndicator size="large" color={colors.primary} />
+            <Text style={styles.errorText}>
+              Reconnecting… ({reconnecting}/{MAX_AUTO_RETRIES})
+            </Text>
+          </View>
+        </View>
+      ) : null}
 
       {/* ERROR OVERLAY */}
       {error || probing ? (
@@ -183,3 +230,11 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
 });
+
+export default function TvPlayerScreen() {
+  return (
+    <TvLockGate canGoBack>
+      <TvPlayerScreenContent />
+    </TvLockGate>
+  );
+}

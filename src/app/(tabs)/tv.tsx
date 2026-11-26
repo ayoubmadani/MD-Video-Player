@@ -4,6 +4,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { Pressable, SectionList, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { TvLockGate } from '@/components/tv-lock-gate';
 import { Thumb } from '@/components/thumb';
 import { listTvChannels, setTvFavorite, type TvChannel } from '@/features/tv/store';
 import { colors, font, radius, spacing } from '@/theme';
@@ -63,7 +64,7 @@ function ChannelRow({
   );
 }
 
-export default function TvScreen() {
+function TvScreenContent() {
   const insets = useSafeAreaInsets();
   const [query, setQuery] = useState('');
   const [showSaved, setShowSaved] = useState(false);
@@ -285,3 +286,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
   },
 });
+
+export default function TvScreen() {
+  return (
+    <TvLockGate>
+      <TvScreenContent />
+    </TvLockGate>
+  );
+}

@@ -4,12 +4,13 @@ import { useCallback, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { TvLockGate } from '@/components/tv-lock-gate';
 import { Button } from '@/components/button';
 import { fetchTvPlaylist, hlsAsChannel, importTvPlaylistFile } from '@/features/tv/api';
 import { deleteTvPlaylist, listTvPlaylists, saveTvPlaylist, type TvPlaylist } from '@/features/tv/store';
 import { colors, font, radius, spacing } from '@/theme';
 
-export default function TvPlaylistsScreen() {
+function TvPlaylistsScreenContent() {
   const insets = useSafeAreaInsets();
   const [playlists, setPlaylists] = useState<TvPlaylist[]>([]);
   const [url, setUrl] = useState('');
@@ -245,3 +246,11 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
   },
 });
+
+export default function TvPlaylistsScreen() {
+  return (
+    <TvLockGate canGoBack>
+      <TvPlaylistsScreenContent />
+    </TvLockGate>
+  );
+}

@@ -31,6 +31,8 @@ import {
   type LibraryStats,
   type ScanRoot,
 } from '@/db/repositories';
+import { useLockState } from '@/features/lock/lock';
+import { usePinFlow } from '@/features/lock/use-pin-flow';
 import { fetchMissingPosters } from '@/features/metadata/fetcher';
 import {
   ALL_VIDEOS_NAME,
@@ -222,6 +224,8 @@ export default function SettingsScreen() {
   const [artworkOpen, setArtworkOpen] = useState(false);
   const [indexOpen, setIndexOpen] = useState(false);
   const [customOpen, setCustomOpen] = useState(false);
+  const lock = useLockState();
+  const pinFlow = usePinFlow();
   const [prefs, setPrefs] = useState<HomePrefs>({
     recentlyAdded: true,
     continueWatching: true,
@@ -491,6 +495,38 @@ export default function SettingsScreen() {
           />
         </Section>
 
+        <Section title="Security">
+          {lock.config.hasPin ? (
+            <>
+              <ToggleRow
+                icon="lock-closed-outline"
+                label="Lock app"
+                hint="Ask for the PIN when MD Player opens"
+                value={lock.config.lockApp}
+                onValueChange={(v) => pinFlow.toggleLock('app', v)}
+                divider
+              />
+              <ToggleRow
+                icon="tv-outline"
+                label="Lock TV channels"
+                hint="Ask for the PIN before opening TV"
+                value={lock.config.lockTv}
+                onValueChange={(v) => pinFlow.toggleLock('tv', v)}
+                divider
+              />
+              <SettingRow icon="key-outline" label="Change PIN" onPress={pinFlow.changePin} divider />
+              <SettingRow icon="trash-outline" label="Remove PIN" tint={colors.error} onPress={pinFlow.deletePin} />
+            </>
+          ) : (
+            <SettingRow
+              icon="lock-closed-outline"
+              label="Set a PIN"
+              hint="Lock the app or the TV channels"
+              onPress={pinFlow.chooseNewPin}
+            />
+          )}
+        </Section>
+
         <Section title="Maintenance">
           <SettingRow
             icon="trash-outline"
@@ -675,6 +711,7 @@ export default function SettingsScreen() {
           </View>
         </InfoModal>
       </ScrollView>
+      {pinFlow.modal}
     </BlurTargetView>
   );
 }
