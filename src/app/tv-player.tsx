@@ -16,10 +16,14 @@ import { colors, font, radius, spacing } from '@/theme';
 // reach the URL, the failure is the stream itself. HEAD is enough; some servers
 // reject it (405) but answering at all means the network path works.
 const MAX_AUTO_RETRIES = 6;
+const CHROME_HIDE_MS = 4000;
 
 async function probeReachable(url: string): Promise<boolean> {
   try {
-    const res = await fetch(url, { method: 'HEAD', signal: AbortSignal.timeout(6000) });
+    const res = await fetch(url, {
+      method: 'HEAD',
+      signal: AbortSignal.timeout(6000),
+    });
     return res.status < 500;
   } catch {
     return false;
@@ -29,7 +33,10 @@ async function probeReachable(url: string): Promise<boolean> {
 function TvPlayerScreenContent() {
   const params = useLocalSearchParams<{ stream: string; name: string }>();
   const [zapList] = useState(getZapList);
-  const [channel, setChannel] = useState({ stream: String(params.stream ?? ''), name: params.name ?? '' });
+  const [channel, setChannel] = useState({
+    stream: String(params.stream ?? ''),
+    name: params.name ?? '',
+  });
   const { stream, name } = channel;
   const position = zapList.findIndex((c) => c.streamUrl === stream);
   const canZap = position >= 0 && zapList.length > 1;
@@ -39,6 +46,29 @@ function TvPlayerScreenContent() {
   const [reconnecting, setReconnecting] = useState(0); // current auto-retry attempt, 0 = none
   const attemptsRef = useRef(0);
   const retryTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [chromeVisible, setChromeVisible] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const chromeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Controls show on tap and fade out after a few seconds so the channel fills the screen.
+  const showChrome = useCallback(() => {
+    setChromeVisible(true);
+    if (chromeTimer.current) clearTimeout(chromeTimer.current);
+    chromeTimer.current = setTimeout(() => setChromeVisible(false), CHROME_HIDE_MS);
+  }, []);
+
+  const hideChrome = useCallback(() => {
+    if (chromeTimer.current) clearTimeout(chromeTimer.current);
+    setChromeVisible(false);
+  }, []);
+
+  useEffect(() => {
+    // Controls start visible; just schedule the first auto-hide.
+    chromeTimer.current = setTimeout(() => setChromeVisible(false), CHROME_HIDE_MS);
+    return () => {
+      if (chromeTimer.current) clearTimeout(chromeTimer.current);
+    };
+  }, []);
 
   const player = useVideoPlayer(String(stream ?? ''), (p) => {
     p.keepScreenOnWhilePlaying = true;
@@ -64,6 +94,10 @@ function TvPlayerScreenContent() {
       .then(() => player.play())
       .catch(() => undefined);
   }, [player, stream]);
+
+  useEventListener(player, 'playingChange', ({ isPlaying: playingNow }) => {
+    setIsPlaying(playingNow);
+  });
 
   useEventListener(player, 'statusChange', ({ status }) => {
     if (status === 'error' && attemptsRef.current < MAX_AUTO_RETRIES) {
@@ -108,19 +142,23 @@ function TvPlayerScreenContent() {
       setProbing(false);
       setError(null);
       setChannel({ stream: next.streamUrl, name: next.name });
+      showChrome();
       player
         .replaceAsync(next.streamUrl)
         .then(() => player.play())
         .catch(() => undefined);
     },
-    [player, stream, zapList],
+    [player, stream, zapList, showChrome],
   );
 
   const retry = () => {
     attemptsRef.current = 0;
     setReconnecting(0);
     setError(null);
-    player.replaceAsync(String(stream ?? '')).then(() => player.play()).catch(() => setError('Could not load the stream.'));
+    player
+      .replaceAsync(String(stream ?? ''))
+      .then(() => player.play())
+      .catch(() => setError('Could not load the stream.'));
   };
 
   return (
@@ -135,35 +173,57 @@ function TvPlayerScreenContent() {
       />
       <Pressable
         style={StyleSheet.absoluteFill}
-        onPress={() => (player.playing ? player.pause() : player.play())}
+        accessibilityLabel={chromeVisible ? 'Hide controls' : 'Show controls'}
+        onPress={() => (chromeVisible ? hideChrome() : showChrome())}
       />
 
-      {/* TOP BAR */}
-      <View style={[styles.topBar, { paddingTop: insets.top + spacing.xs }]}>
-        <Pressable onPress={() => router.back()} hitSlop={12} style={styles.back}>
-          <Ionicons name="chevron-back" size={24} color={colors.textPrimary} />
-        </Pressable>
-        <Text style={styles.title} numberOfLines={1}>
-          {name || 'Live TV'}
-        </Text>
-        {canZap ? (
-          <Text style={styles.position}>
-            {position + 1}/{zapList.length}
+      {/* TOP BAR — hidden with the controls, kept while an error is shown so Back stays reachable */}
+      {chromeVisible || error ? (
+        <View style={[styles.topBar, { paddingTop: insets.top + spacing.xs }]}>
+          <Pressable onPress={() => router.back()} hitSlop={12} style={styles.back}>
+            <Ionicons name="chevron-back" size={24} color={colors.textPrimary} />
+          </Pressable>
+          <Text style={styles.title} numberOfLines={1}>
+            {name || 'Live TV'}
           </Text>
-        ) : (
-          <View style={{ width: 38 }} />
-        )}
-      </View>
+          {canZap ? (
+            <Text style={styles.position}>
+              {position + 1}/{zapList.length}
+            </Text>
+          ) : (
+            <View style={{ width: 38 }} />
+          )}
+        </View>
+      ) : null}
 
-      {/* CHANNEL SWITCH */}
-      {canZap ? (
+      {/* PLAY / PAUSE */}
+      {chromeVisible && !error && !probing && reconnecting === 0 ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={isPlaying ? 'Pause' : 'Play'}
+          onPress={() => {
+            if (player.playing) player.pause();
+            else player.play();
+            showChrome();
+          }}
+          style={({ pressed }) => [styles.playBtn, pressed && styles.zapPressed]}>
+          <Ionicons name={isPlaying ? 'pause' : 'play'} size={34} color={colors.textPrimary} />
+        </Pressable>
+      ) : null}
+
+      {/* CHANNEL SWITCH — also kept on errors so a dead channel can be skipped */}
+      {canZap && (chromeVisible || error) ? (
         <>
           <Pressable
             accessibilityRole="button"
             accessibilityLabel="Previous channel"
             onPress={() => zap(-1)}
             hitSlop={8}
-            style={({ pressed }) => [styles.zapBtn, { left: insets.left + spacing.base }, pressed && styles.zapPressed]}>
+            style={({ pressed }) => [
+              styles.zapBtn,
+              { left: insets.left + spacing.base },
+              pressed && styles.zapPressed,
+            ]}>
             <Ionicons name="chevron-back" size={30} color={colors.textPrimary} />
           </Pressable>
           <Pressable
@@ -171,7 +231,11 @@ function TvPlayerScreenContent() {
             accessibilityLabel="Next channel"
             onPress={() => zap(1)}
             hitSlop={8}
-            style={({ pressed }) => [styles.zapBtn, { right: insets.right + spacing.base }, pressed && styles.zapPressed]}>
+            style={({ pressed }) => [
+              styles.zapBtn,
+              { right: insets.right + spacing.base },
+              pressed && styles.zapPressed,
+            ]}>
             <Ionicons name="chevron-forward" size={30} color={colors.textPrimary} />
           </Pressable>
         </>
@@ -197,12 +261,16 @@ function TvPlayerScreenContent() {
             ) : (
               <>
                 <Ionicons
-                  name={error?.includes('internet') ? 'cloud-offline-outline' : 'alert-circle-outline'}
+                  name={
+                    error?.includes('internet') ? 'cloud-offline-outline' : 'alert-circle-outline'
+                  }
                   size={40}
                   color={colors.textSecondary}
                 />
                 <Text style={styles.errorText}>{error}</Text>
-                <Pressable onPress={retry} style={({ pressed }) => [styles.retryBtn, pressed && { opacity: 0.7 }]}>
+                <Pressable
+                  onPress={retry}
+                  style={({ pressed }) => [styles.retryBtn, pressed && { opacity: 0.7 }]}>
                   <Ionicons name="refresh" size={16} color={colors.onPrimary} />
                   <Text style={styles.retryText}>Retry</Text>
                 </Pressable>
@@ -259,6 +327,20 @@ const styles = StyleSheet.create({
     marginTop: -28,
     width: 56,
     height: 56,
+    borderRadius: radius.full,
+    backgroundColor: colors.overlay,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 5,
+  },
+  playBtn: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    marginTop: -36,
+    marginLeft: -36,
+    width: 72,
+    height: 72,
     borderRadius: radius.full,
     backgroundColor: colors.overlay,
     alignItems: 'center',

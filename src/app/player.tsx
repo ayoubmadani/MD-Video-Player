@@ -435,7 +435,9 @@ export default function PlayerScreen() {
   //  hold = 2x;  vertical swipe L/R = brightness/volume;  double-tap sides = ±10s;  single tap = chrome
   const onVideoGrant = useCallback(
     (e: GestureResponderEvent) => {
-      swipeRef.current = { active: false, startX: e.nativeEvent.locationX, startY: e.nativeEvent.locationY };
+      // pageX/pageY: screen coordinates. locationX/Y are relative to whichever view is under the
+      // finger and jump on Android when the swipe crosses another element.
+      swipeRef.current = { active: false, startX: e.nativeEvent.pageX, startY: e.nativeEvent.pageY };
       startHold();
     },
     [startHold],
@@ -444,14 +446,16 @@ export default function PlayerScreen() {
   const onVideoMove = useCallback(
     (e: GestureResponderEvent) => {
       const { active, startX, startY } = swipeRef.current;
-      const dy = startY - e.nativeEvent.locationY; // up = positive
+      const dy = startY - e.nativeEvent.pageY; // up = positive
       if (!active) {
         if (Math.abs(dy) < 12) return;
         swipeRef.current.active = true;
         if (holdTimer.current) clearTimeout(holdTimer.current);
         endHold();
       }
-      const delta = dy / Math.max(1, height);
+      // Full 0→100% over ~90% of the short screen side, so the swipe feels the same in portrait
+      // (tall screen) and landscape — dividing by height made portrait twice as slow.
+      const delta = dy / Math.max(1, Math.min(width, height) * 0.9);
       const leftSide = startX < width / 2;
       const base = leftSide ? briStartRef.current : volStartRef.current;
       const value = Math.min(1, Math.max(0, base + delta));
@@ -492,7 +496,7 @@ export default function PlayerScreen() {
         if (singleTapTimer.current) clearTimeout(singleTapTimer.current);
         singleTapTimer.current = null;
         lastTapTimeRef.current = 0;
-        const forward = e.nativeEvent.locationX >= width / 2;
+        const forward = e.nativeEvent.pageX >= width / 2;
         const dur = lastDurRef.current;
         let next = lastPosRef.current + (forward ? 10 : -10);
         if (next < 0) next = 0;
