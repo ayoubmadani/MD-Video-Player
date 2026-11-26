@@ -53,3 +53,15 @@ export function defaultPlaylistName(url: string, kind: 'channels' | 'hls'): stri
     return 'TV Playlist';
   }
 }
+
+const ABSOLUTE_STREAM = /^(https?|rtmps?|rtsp|rtp|udp|mms|srt):\/\//i;
+
+/** A local file has no base URL, so relative stream lines can't be resolved — keep absolute ones only. */
+export function absoluteStreamsOnly(channels: ParsedChannel[]): ParsedChannel[] {
+  return channels.filter((c) => ABSOLUTE_STREAM.test(c.streamUrl));
+}
+
+/** Playlist name from a picked file name: `Arabic Channels.m3u8` -> `Arabic Channels`. */
+export function playlistNameFromFile(fileName: string): string {
+  return fileName.replace(/\.(m3u8?|txt)$/i, '').trim() || 'TV Playlist';
+}

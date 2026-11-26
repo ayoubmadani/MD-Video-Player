@@ -1,7 +1,7 @@
 import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
 
-import { defaultPlaylistName, parseM3u } from './parse';
+import { absoluteStreamsOnly, defaultPlaylistName, parseM3u, playlistNameFromFile } from './parse';
 
 const CHANNELS_M3U = `#EXTM3U
 #EXTINF:-1 tvg-id="AajTak.in@SD" tvg-logo="https://example.com/aajtak.png" group-title="News",Aaj Tak (1080p)
@@ -45,4 +45,19 @@ test('parseM3u rejects junk', () => {
 test('defaultPlaylistName uses file name for lists and host for HLS', () => {
   assert.equal(defaultPlaylistName('https://iptv-org.github.io/iptv/languages/hin.m3u', 'channels'), 'hin');
   assert.equal(defaultPlaylistName('https://example.com/live/master.m3u8', 'hls'), 'example.com');
+});
+
+test('absoluteStreamsOnly drops relative stream lines from local files', () => {
+  const kept = absoluteStreamsOnly([
+    { name: 'A', streamUrl: 'http://x.tv/a.m3u8', logoUrl: null, groupName: null },
+    { name: 'B', streamUrl: 'chunks/b.ts', logoUrl: null, groupName: null },
+    { name: 'C', streamUrl: 'rtmp://live.example/c', logoUrl: null, groupName: null },
+  ]);
+  assert.deepEqual(kept.map((c) => c.name), ['A', 'C']);
+});
+
+test('playlistNameFromFile strips playlist extensions', () => {
+  assert.equal(playlistNameFromFile('Arabic Channels.m3u8'), 'Arabic Channels');
+  assert.equal(playlistNameFromFile('sports.M3U'), 'sports');
+  assert.equal(playlistNameFromFile('.m3u'), 'TV Playlist');
 });

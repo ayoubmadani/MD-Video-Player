@@ -5,7 +5,7 @@ import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '@/components/button';
-import { fetchTvPlaylist, hlsAsChannel } from '@/features/tv/api';
+import { fetchTvPlaylist, hlsAsChannel, importTvPlaylistFile } from '@/features/tv/api';
 import { deleteTvPlaylist, listTvPlaylists, saveTvPlaylist, type TvPlaylist } from '@/features/tv/store';
 import { colors, font, radius, spacing } from '@/theme';
 
@@ -44,6 +44,23 @@ export default function TvPlaylistsScreen() {
     }
   }, [url, busy, reload]);
 
+  const onImportFile = useCallback(async () => {
+    if (busy) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const imported = await importTvPlaylistFile();
+      if (!imported) return;
+      await saveTvPlaylist(imported.sourceUri, imported.name, imported.channels);
+      reload();
+      Alert.alert('Playlist added', `"${imported.name}" — ${imported.channels.length} channels.`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Could not read that playlist file.');
+    } finally {
+      setBusy(false);
+    }
+  }, [busy, reload]);
+
   const onDelete = useCallback(
     (p: TvPlaylist) => {
       Alert.alert('Remove playlist?', `"${p.name}" and its ${p.channelCount} channels will be removed.`, [
@@ -75,8 +92,8 @@ export default function TvPlaylistsScreen() {
           paddingBottom: spacing['2xl'] + insets.bottom,
         }}>
         <Text style={styles.hint}>
-          Paste an M3U/M3U8 playlist link to add its channels to the TV tab. Channels stream over the
-          internet and need a connection.
+          Paste an M3U/M3U8 playlist link or load a playlist file saved on this phone to add its
+          channels to the TV tab. Channels stream over the internet and need a connection.
         </Text>
 
         <Text style={styles.fieldLabel}>Playlist URL</Text>
@@ -96,6 +113,14 @@ export default function TvPlaylistsScreen() {
         <View style={{ marginTop: spacing.base }}>
           <Button label={busy ? 'Adding…' : 'Add playlist'} onPress={onAdd} disabled={busy || !url.trim()} />
         </View>
+
+        <Text style={[styles.fieldLabel, { marginTop: spacing.xl }]}>Or load a file from this phone</Text>
+        <Button
+          label={busy ? 'Loading…' : 'Load playlist file (.m3u / .m3u8)'}
+          variant="secondary"
+          onPress={onImportFile}
+          disabled={busy}
+        />
 
         <Text style={[styles.fieldLabel, { marginTop: spacing.xl }]}>
           {playlists.length} {playlists.length === 1 ? 'playlist' : 'playlists'} added
